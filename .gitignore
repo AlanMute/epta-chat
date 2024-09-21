@@ -7,3 +7,4 @@ lessons
 ./lessons
 ./static/letters
 ./internal/config/emailConf/conf.yaml
+.idea/
