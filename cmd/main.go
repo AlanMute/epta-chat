@@ -6,7 +6,7 @@ import (
 	"github.com/KrizzMU/coolback-alkol/internal/config"
 	"github.com/KrizzMU/coolback-alkol/internal/transport/rest"
 	"github.com/KrizzMU/coolback-alkol/internal/transport/rest/handler"
-	"log"
+	"github.com/KrizzMU/coolback-alkol/pkg/logger/sl"
 	"os"
 	"os/signal"
 	"syscall"
@@ -15,6 +15,10 @@ import (
 
 func main() {
 	cfg := config.MustLoad()
+
+	log := sl.SetupLogger(cfg.Env, cfg.Logger)
+
+	log.With("config", cfg).Info("Application start!")
 
 	// Setup REST server
 	h := handler.New()
@@ -26,19 +30,20 @@ func main() {
 
 	go func() {
 		if err := s.Run(); err != nil {
-			log.Printf(fmt.Sprintf("failed to start server because: %v", err))
+			log.Error(fmt.Sprintf("failed to start server because: %v", err))
 		}
 	}()
 
 	<-done
+	log.Info("stopping server")
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(cfg.GracefulShutdownTimeout)*time.Second)
 	defer cancel()
 
 	if err := s.Shutdown(ctx); err != nil {
-		log.Printf(fmt.Sprintf("failed to shutdown server because: %v", err))
+		log.Error(fmt.Sprintf("failed to shutdown server because: %v", err))
 		return
 	}
 
-	log.Print("stopped server")
+	log.Info("Application stopped!")
 }

@@ -3,4 +3,6 @@
 .idea/
 docs
 dist
+logs
+*.log
 *.yaml
