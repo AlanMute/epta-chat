@@ -9,7 +9,8 @@ import (
 )
 
 type Config struct {
-	Server rest.Config `yaml:"server"`
+	GracefulShutdownTimeout uint        `yaml:"graceful_shutdown_timeout" default:"10"`
+	Server                  rest.Config `yaml:"server"`
 }
 
 func MustLoad() *Config {

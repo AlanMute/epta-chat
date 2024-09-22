@@ -1,6 +1,7 @@
 package rest
 
 import (
+	"context"
 	"net/http"
 	"time"
 
@@ -33,4 +34,8 @@ func New(cfg Config, ginEngine *gin.Engine) *Server {
 
 func (s *Server) Run() error {
 	return s.httpServer.ListenAndServe()
+}
+
+func (s *Server) Shutdown(ctx context.Context) error {
+	return s.httpServer.Shutdown(ctx)
 }
