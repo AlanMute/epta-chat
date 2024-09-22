@@ -1,7 +1,0 @@
-internal/db/sql
-.env
-./db/sql
-.idea/
-./docs
-./dist
-*.yaml
