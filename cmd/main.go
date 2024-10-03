@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/KrizzMU/coolback-alkol/internal/config"
+	"github.com/KrizzMU/coolback-alkol/internal/core/messenger/domain/model"
 	"github.com/KrizzMU/coolback-alkol/internal/transport/rest"
 	"github.com/KrizzMU/coolback-alkol/internal/transport/rest/handler"
 	"github.com/KrizzMU/coolback-alkol/pkg/logger/sl"
@@ -20,8 +21,10 @@ func main() {
 
 	log.With("config", cfg).Info("Application start!")
 
+	messenger := model.NewMessenger()
+
 	// Setup REST server
-	h := handler.New()
+	h := handler.New(messenger)
 	s := rest.New(cfg.Server, h.InitRoutes())
 
 	// Graceful shutdown
