@@ -8,14 +8,15 @@ import (
 
 type Client struct {
 	conn           *websocket.Conn
+	wg             *sync.WaitGroup
 	send           chan string
 	maxMessageSize int64
-	pongWaitTime   time.Duration
-	pingPeriodTime time.Duration
+	pongWaitTime   time.Duration // Время ожидания Pong от клиента
+	pingPeriodTime time.Duration // Интервал отправки Ping от сервера
 }
 
-func (c *Client) StartReading(wg *sync.WaitGroup, queue chan<- string) {
-	defer wg.Done()
+func (c *Client) startReading(queue chan<- string) {
+	defer c.wg.Done()
 	c.conn.SetReadLimit(c.maxMessageSize)
 	_ = c.conn.SetReadDeadline(time.Now().Add(c.pongWaitTime))
 	c.conn.SetPongHandler(func(string) error { _ = c.conn.SetReadDeadline(time.Now().Add(c.pongWaitTime)); return nil })
@@ -30,8 +31,8 @@ func (c *Client) StartReading(wg *sync.WaitGroup, queue chan<- string) {
 	}
 }
 
-func (c *Client) StartSending(wg *sync.WaitGroup) {
-	defer wg.Done()
+func (c *Client) startSending() {
+	defer c.wg.Done()
 	ticker := time.NewTicker(c.pingPeriodTime)
 	defer func() {
 		ticker.Stop()
@@ -45,14 +46,7 @@ func (c *Client) StartSending(wg *sync.WaitGroup) {
 				_ = c.conn.WriteMessage(websocket.CloseMessage, []byte{})
 				return
 			}
-
-			w, err := c.conn.NextWriter(websocket.TextMessage)
-
-			if err != nil {
-				return
-			}
-
-			_, _ = w.Write([]byte(message))
+			_ = c.conn.WriteMessage(websocket.TextMessage, []byte(message))
 
 		case <-ticker.C:
 			_ = c.conn.SetWriteDeadline(time.Now().Add(c.pingPeriodTime))
@@ -63,9 +57,18 @@ func (c *Client) StartSending(wg *sync.WaitGroup) {
 	}
 }
 
+// Run Запускает блокирующий ввод/вывод над клиентом
+func (c *Client) Run(messageQueue chan<- string) {
+	c.wg.Add(2)
+	go c.startReading(messageQueue)
+	go c.startSending()
+	c.wg.Wait()
+}
+
 func newClient(conn *websocket.Conn) *Client {
 	return &Client{
 		conn:           conn,
+		wg:             &sync.WaitGroup{},
 		send:           make(chan string),
 		pongWaitTime:   5 * time.Second,
 		pingPeriodTime: 4 * time.Second,

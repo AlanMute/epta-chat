@@ -22,6 +22,7 @@ func main() {
 	log.With("config", cfg).Info("Application start!")
 
 	messenger := model.NewMessenger()
+	messenger.Run()
 
 	// Setup REST server
 	h := handler.New(messenger)

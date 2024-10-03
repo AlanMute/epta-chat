@@ -3,7 +3,6 @@ package model
 import (
 	"github.com/gorilla/websocket"
 	"net/http"
-	"sync"
 )
 
 type Messenger struct {
@@ -29,13 +28,14 @@ func NewMessenger() *Messenger {
 		broadcast: make(chan string),
 		clients:   make(map[*Client]bool),
 	}
-	go m.startBroadcasting()
 	return m
 }
 
-func (m *Messenger) Connect(w http.ResponseWriter, r *http.Request) error {
-	wg := sync.WaitGroup{}
+func (m *Messenger) Run() {
+	go m.startBroadcasting()
+}
 
+func (m *Messenger) Connect(w http.ResponseWriter, r *http.Request) error {
 	conn, err := m.upgrader.Upgrade(w, r, nil)
 
 	if err != nil {
@@ -43,14 +43,15 @@ func (m *Messenger) Connect(w http.ResponseWriter, r *http.Request) error {
 	}
 
 	client := newClient(conn)
+
+	// Добавление клиента в список подключений
 	m.clients[client] = true
 
-	wg.Add(2)
-	go client.StartReading(&wg, m.broadcast)
-	go client.StartSending(&wg)
+	// Блокировка на чтение и запись
+	client.Run(m.broadcast)
 
-	wg.Wait()
-
+	// Удаление клиента из списка подключений, так как соединение прервано
 	delete(m.clients, client)
+
 	return nil
 }
