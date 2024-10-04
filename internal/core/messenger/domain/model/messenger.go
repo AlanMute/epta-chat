@@ -20,14 +20,14 @@ func (m *Messenger) CreateChat(id int) {
 	chat := &Chat{
 		ID:        id,
 		clients:   make(map[*Client]bool),
-		broadcast: make(chan Message),
+		broadcast: make(chan MessageSent),
 	}
 	m.chats[id] = chat
 	chat.Run()
 }
 
-func (m *Messenger) Connect(conn *websocket.Conn, chatID int) error {
-	client := newClient(conn)
+func (m *Messenger) Connect(conn *websocket.Conn, chatID int, userID int) error {
+	client := newClient(conn, userID)
 
 	chat, ok := m.chats[chatID]
 

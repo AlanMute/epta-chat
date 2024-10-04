@@ -8,15 +8,16 @@ import (
 )
 
 type Client struct {
+	userID         int
 	conn           *websocket.Conn
 	wg             *sync.WaitGroup
-	send           chan Message
+	send           chan MessageSent
 	maxMessageSize int64
 	pongWaitTime   time.Duration // Время ожидания Pong от клиента
 	pingPeriodTime time.Duration // Интервал отправки Ping от сервера
 }
 
-func (c *Client) readPump(queue chan<- Message) {
+func (c *Client) readPump(queue chan<- MessageSent) {
 	defer c.wg.Done()
 
 	c.conn.SetReadLimit(c.maxMessageSize)
@@ -30,13 +31,16 @@ func (c *Client) readPump(queue chan<- Message) {
 			break
 		}
 
-		var message Message
+		var message MessageReceived
 		err = json.Unmarshal(data, &message)
 		if err != nil {
 			break
 		}
 
-		queue <- message
+		queue <- MessageSent{
+			AuthorID: c.userID,
+			Text:     message.Text,
+		}
 	}
 }
 
@@ -76,7 +80,7 @@ func (c *Client) writePump() {
 }
 
 // Run Запускает блокирующий ввод/вывод над клиентом
-func (c *Client) Run(messageQueue chan<- Message) {
+func (c *Client) Run(messageQueue chan<- MessageSent) {
 	defer func() {
 		_ = c.conn.Close()
 	}()
@@ -87,11 +91,12 @@ func (c *Client) Run(messageQueue chan<- Message) {
 	c.wg.Wait()
 }
 
-func newClient(conn *websocket.Conn) *Client {
+func newClient(conn *websocket.Conn, userID int) *Client {
 	return &Client{
+		userID:         userID,
 		conn:           conn,
 		wg:             &sync.WaitGroup{},
-		send:           make(chan Message),
+		send:           make(chan MessageSent),
 		pongWaitTime:   5 * time.Second,
 		pingPeriodTime: 4 * time.Second,
 		maxMessageSize: 10000,

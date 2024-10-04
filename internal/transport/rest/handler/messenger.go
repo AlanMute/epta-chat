@@ -30,13 +30,25 @@ func (h *Handler) Connect(c *gin.Context) {
 		return
 	}
 
+	userIDStr := c.Query("user_id")
+	if userIDStr == "" {
+		c.JSON(http.StatusBadRequest, resp.Error("user_id is required"))
+		return
+	}
+
+	userID, err := strconv.Atoi(userIDStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, resp.Error("user_id should be int"))
+		return
+	}
+
 	conn, err := h.upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, resp.Error("unable to upgrade connection to websocket"))
 		return
 	}
 
-	err = h.messenger.Connect(conn, chatID)
+	err = h.messenger.Connect(conn, chatID, userID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, resp.Error("unable to connect to websocket"))
 		return
