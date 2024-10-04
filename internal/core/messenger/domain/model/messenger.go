@@ -27,10 +27,6 @@ func (m *Messenger) CreateChat(id int) {
 }
 
 func (m *Messenger) Connect(conn *websocket.Conn, chatID int) error {
-	defer func() {
-		_ = conn.Close()
-	}()
-
 	client := newClient(conn)
 
 	chat, ok := m.chats[chatID]

@@ -62,6 +62,10 @@ func (c *Client) writePump() {
 
 // Run Запускает блокирующий ввод/вывод над клиентом
 func (c *Client) Run(messageQueue chan<- string) {
+	defer func() {
+		_ = c.conn.Close()
+	}()
+
 	c.wg.Add(2)
 	go c.readPump(messageQueue)
 	go c.writePump()
