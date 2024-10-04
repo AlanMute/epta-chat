@@ -15,8 +15,9 @@ type Client struct {
 	pingPeriodTime time.Duration // Интервал отправки Ping от сервера
 }
 
-func (c *Client) startReading(queue chan<- string) {
+func (c *Client) readPump(queue chan<- string) {
 	defer c.wg.Done()
+
 	c.conn.SetReadLimit(c.maxMessageSize)
 	_ = c.conn.SetReadDeadline(time.Now().Add(c.pongWaitTime))
 	c.conn.SetPongHandler(func(string) error { _ = c.conn.SetReadDeadline(time.Now().Add(c.pongWaitTime)); return nil })
@@ -31,13 +32,15 @@ func (c *Client) startReading(queue chan<- string) {
 	}
 }
 
-func (c *Client) startSending() {
-	defer c.wg.Done()
+func (c *Client) writePump() {
 	ticker := time.NewTicker(c.pingPeriodTime)
+
 	defer func() {
 		ticker.Stop()
 		_ = c.conn.Close()
+		c.wg.Done()
 	}()
+
 	for {
 		select {
 		case message, ok := <-c.send:
@@ -60,8 +63,8 @@ func (c *Client) startSending() {
 // Run Запускает блокирующий ввод/вывод над клиентом
 func (c *Client) Run(messageQueue chan<- string) {
 	c.wg.Add(2)
-	go c.startReading(messageQueue)
-	go c.startSending()
+	go c.readPump(messageQueue)
+	go c.writePump()
 	c.wg.Wait()
 }
 

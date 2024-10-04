@@ -2,6 +2,7 @@ package handler
 
 import (
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 // Connect godoc
@@ -14,6 +15,7 @@ import (
 func (h *Handler) Connect(c *gin.Context) {
 	err := h.messenger.Connect(c.Writer, c.Request)
 	if err != nil {
-		return
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 	}
+	c.JSON(http.StatusOK, gin.H{"message": "Connection Established"})
 }

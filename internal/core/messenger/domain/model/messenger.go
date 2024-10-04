@@ -1,22 +1,15 @@
 package model
 
 import (
+	"fmt"
 	"github.com/gorilla/websocket"
 	"net/http"
+	"strconv"
 )
 
 type Messenger struct {
-	upgrader  websocket.Upgrader
-	broadcast chan string
-	clients   map[*Client]bool
-}
-
-func (m *Messenger) startBroadcasting() {
-	for message := range m.broadcast {
-		for client := range m.clients {
-			client.send <- message
-		}
-	}
+	upgrader websocket.Upgrader
+	chats    map[int]*Chat
 }
 
 func NewMessenger() *Messenger {
@@ -25,17 +18,34 @@ func NewMessenger() *Messenger {
 			ReadBufferSize:  4096,
 			WriteBufferSize: 4096,
 		},
-		broadcast: make(chan string),
-		clients:   make(map[*Client]bool),
+		chats: make(map[int]*Chat),
 	}
 	return m
 }
 
-func (m *Messenger) Run() {
-	go m.startBroadcasting()
+func (m *Messenger) CreateChat(id int) {
+	chat := &Chat{
+		ID:        id,
+		clients:   make(map[*Client]bool),
+		broadcast: make(chan string),
+	}
+	m.chats[id] = chat
+	chat.Run()
 }
 
 func (m *Messenger) Connect(w http.ResponseWriter, r *http.Request) error {
+	chatIDStr := r.URL.Query().Get("chat_id")
+
+	if chatIDStr == "" {
+		return fmt.Errorf("chat_id is empty")
+	}
+
+	chatID, err := strconv.Atoi(chatIDStr)
+
+	if err != nil {
+		return err
+	}
+
 	conn, err := m.upgrader.Upgrade(w, r, nil)
 
 	if err != nil {
@@ -44,14 +54,13 @@ func (m *Messenger) Connect(w http.ResponseWriter, r *http.Request) error {
 
 	client := newClient(conn)
 
-	// Добавление клиента в список подключений
-	m.clients[client] = true
+	chat, ok := m.chats[chatID]
 
-	// Блокировка на чтение и запись
-	client.Run(m.broadcast)
+	if !ok {
+		return fmt.Errorf("chat with id %d not found", chatID)
+	}
 
-	// Удаление клиента из списка подключений, так как соединение прервано
-	delete(m.clients, client)
+	chat.Connect(client)
 
 	return nil
 }
