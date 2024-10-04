@@ -3,6 +3,7 @@ package handler
 import (
 	"github.com/KrizzMU/coolback-alkol/internal/core/messenger/domain/model"
 	"github.com/gin-gonic/gin"
+	"github.com/gorilla/websocket"
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 
@@ -15,11 +16,16 @@ import (
 
 type Handler struct {
 	messenger *model.Messenger
+	upgrader  *websocket.Upgrader
 }
 
 func New(messenger *model.Messenger) *Handler {
 	return &Handler{
 		messenger: messenger,
+		upgrader: &websocket.Upgrader{
+			ReadBufferSize:  4096,
+			WriteBufferSize: 4096,
+		},
 	}
 }
 
