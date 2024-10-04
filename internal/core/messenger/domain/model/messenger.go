@@ -20,7 +20,7 @@ func (m *Messenger) CreateChat(id int) {
 	chat := &Chat{
 		ID:        id,
 		clients:   make(map[*Client]bool),
-		broadcast: make(chan string),
+		broadcast: make(chan Message),
 	}
 	m.chats[id] = chat
 	chat.Run()

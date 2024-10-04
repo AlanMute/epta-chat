@@ -1,6 +1,7 @@
 package model
 
 import (
+	"github.com/goccy/go-json"
 	"github.com/gorilla/websocket"
 	"sync"
 	"time"
@@ -9,13 +10,13 @@ import (
 type Client struct {
 	conn           *websocket.Conn
 	wg             *sync.WaitGroup
-	send           chan string
+	send           chan Message
 	maxMessageSize int64
 	pongWaitTime   time.Duration // Время ожидания Pong от клиента
 	pingPeriodTime time.Duration // Интервал отправки Ping от сервера
 }
 
-func (c *Client) readPump(queue chan<- string) {
+func (c *Client) readPump(queue chan<- Message) {
 	defer c.wg.Done()
 
 	c.conn.SetReadLimit(c.maxMessageSize)
@@ -23,12 +24,19 @@ func (c *Client) readPump(queue chan<- string) {
 	c.conn.SetPongHandler(func(string) error { _ = c.conn.SetReadDeadline(time.Now().Add(c.pongWaitTime)); return nil })
 
 	for {
-		_, message, err := c.conn.ReadMessage()
+		_, data, err := c.conn.ReadMessage()
 
 		if err != nil {
 			break
 		}
-		queue <- string(message)
+
+		var message Message
+		err = json.Unmarshal(data, &message)
+		if err != nil {
+			break
+		}
+
+		queue <- message
 	}
 }
 
@@ -49,7 +57,14 @@ func (c *Client) writePump() {
 				_ = c.conn.WriteMessage(websocket.CloseMessage, []byte{})
 				return
 			}
-			_ = c.conn.WriteMessage(websocket.TextMessage, []byte(message))
+
+			data, err := json.Marshal(message)
+
+			if err != nil {
+				return
+			}
+
+			_ = c.conn.WriteMessage(websocket.TextMessage, data)
 
 		case <-ticker.C:
 			_ = c.conn.SetWriteDeadline(time.Now().Add(c.pingPeriodTime))
@@ -61,7 +76,7 @@ func (c *Client) writePump() {
 }
 
 // Run Запускает блокирующий ввод/вывод над клиентом
-func (c *Client) Run(messageQueue chan<- string) {
+func (c *Client) Run(messageQueue chan<- Message) {
 	defer func() {
 		_ = c.conn.Close()
 	}()
@@ -76,7 +91,7 @@ func newClient(conn *websocket.Conn) *Client {
 	return &Client{
 		conn:           conn,
 		wg:             &sync.WaitGroup{},
-		send:           make(chan string),
+		send:           make(chan Message),
 		pongWaitTime:   5 * time.Second,
 		pingPeriodTime: 4 * time.Second,
 		maxMessageSize: 10000,

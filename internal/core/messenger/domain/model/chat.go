@@ -3,7 +3,7 @@ package model
 type Chat struct {
 	ID        int
 	clients   map[*Client]bool
-	broadcast chan string
+	broadcast chan Message
 }
 
 func (c *Chat) startBroadcasting() {
