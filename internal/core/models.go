@@ -5,49 +5,65 @@ import (
 )
 
 type GormModel struct {
-	ID        uint       `gorm:"primary_key" json:"id"`
-	CreatedAt time.Time  `json:"-"`
-	UpdatedAt time.Time  `json:"-"`
-	DeletedAt *time.Time `sql:"index" json:"-"`
+	ID uint64 `gorm:"primary_key" json:"id"`
 }
 
-type Course struct {
+type User struct {
 	GormModel
 
-	Name        string `gorm:"not null; unique"`
-	Description string `gorm:"not null"`
+	Login    string `gorm:"not null; unique"`
+	UserName string `gorm:"not null"`
+	Password string `gorm:"not null"`
 }
 
-type Module struct {
+type Contact struct {
 	GormModel
 
-	Name        string `gorm:"not null"`
-	Description string `gorm:"not null"`
-	OrderID     uint   `gorm:"not null"`
-	CourseID    uint
+	OwnerId uint64
+	Owner   User `gorm:"foreignKey:OwnerId"`
 
-	Course Course `gorm:"foreignKey:CourseID" json:"-"`
+	ConactId uint64
+	Contact  User `gorm:"foreignKey:ConactId"`
 }
 
-type Lesson struct {
+type Token struct {
 	GormModel
 
-	Name        string `gorm:"not null"`
-	Description string `gorm:"not null"`
-	OrderID     uint   `gorm:"not null"`
-	ModuleID    uint
-
-	Module Module `gorm:"foreignKey:ModuleID" json:"-"`
-}
-
-type Sessions struct {
-	GormModel
-	RefreshToken   string
+	UserId         uint64
+	RefreshToken   string `gorm:"not null"`
 	ExpirationTime time.Time
+
+	User User `gorm:"foreignKey:UserId"`
 }
 
-type Email struct {
+type Chat struct {
 	GormModel
 
-	Address string `gorm:"not null; unique"`
+	Name     string `gorm:"not null"`
+	IsDirect bool   `gorm:"not null"`
+	OwnerId  uint64
+
+	Owner User `gorm:"foreignKey:OwnerId"`
+}
+
+type ChatMembers struct {
+	GormModel
+
+	MemberId uint64 `gorm:"not null"`
+	ChatId   uint64 `gorm:"not null"`
+
+	Member User `gorm:"foreignKey:MemberId"`
+	Chat   Chat `gorm:"foreignKey:ChatId"`
+}
+
+type Message struct {
+	GormModel
+
+	Text        string `gorm:"not null"`
+	SendingTime time.Time
+	SenderId    uint64 `gorm:"not null"`
+	ChatId      uint64 `gorm:"not null"`
+
+	Sender User `gorm:"foreignKey:SenderId"`
+	Chat   Chat `gorm:"foreignKey:ChatId"`
 }
