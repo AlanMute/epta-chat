@@ -14,21 +14,39 @@ func NewChatSevice(repo repository.Chat) *ChatService {
 }
 
 func (s *ChatService) Add(name string, isDirect bool, ownerId uint64, members []uint64) (uint64, error) {
-	return 0, nil
+	return s.repo.Add(name, isDirect, ownerId, s.getUniqueMembers(members))
 }
 
 func (s *ChatService) Delete(userId, chatId uint64) error {
-	return nil
+	return s.repo.Delete(userId, chatId)
 }
 
 func (s *ChatService) GetById(userId, chatId uint64) (core.Chat, error) {
-	return core.Chat{}, nil
+	return s.repo.GetById(userId, chatId)
 }
 
 func (s *ChatService) GetAll(userId uint64) ([]core.Chat, error) {
-	return nil, nil
+	return s.repo.GetAll(userId)
 }
 
 func (s *ChatService) GetMembers(userId, chatId uint64) ([]core.UserInfo, error) {
-	return nil, nil
+	return s.repo.GetMembers(userId, chatId)
+}
+
+func (s *ChatService) getUniqueMembers(members []uint64) []uint64 {
+	uniqMembMap := make(map[uint64]struct{}, len(members))
+	for _, id := range members {
+		uniqMembMap[id] = struct{}{}
+	}
+
+	if len(members) == len(uniqMembMap) {
+		return members
+	}
+
+	members = members[:0]
+	for id := range uniqMembMap {
+		members = append(members, id)
+	}
+
+	return members
 }

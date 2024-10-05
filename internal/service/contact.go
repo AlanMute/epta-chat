@@ -14,17 +14,17 @@ func NewContactSevice(repo repository.Contact) *ContactService {
 }
 
 func (s *ContactService) Add(ownerId, conactId uint64) error {
-	return nil
+	return s.repo.Add(ownerId, conactId)
 }
 
 func (s *ContactService) Delete(ownerId, conactId uint64) error {
-	return nil
+	return s.repo.Delete(ownerId, conactId)
 }
 
 func (s *ContactService) GetAll(ownerId uint64) ([]core.UserInfo, error) {
-	return nil, nil
+	return s.repo.GetAll(ownerId)
 }
 
 func (s *ContactService) GetById(id uint64) (core.UserInfo, error) {
-	return core.UserInfo{}, nil
+	return s.repo.GetById(id)
 }

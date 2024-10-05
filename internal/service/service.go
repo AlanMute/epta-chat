@@ -41,7 +41,6 @@ func NewRepository(repo *repository.Repository, t auth.TokenManager) *Service {
 	return &Service{
 		Contact: NewContactSevice(repo.Contact),
 		Chat:    NewChatSevice(repo.Chat),
-		User:    NewUserSevice(repo.User),
-		Session: NewSessionService(repo.Session),
+		User:    NewUserSevice(repo.User, t),
 	}
 }
