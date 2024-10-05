@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"github.com/KrizzMU/coolback-alkol/internal/service"
+	"github.com/KrizzMU/coolback-alkol/pkg/auth"
 	"github.com/gin-gonic/gin"
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -11,7 +13,8 @@ import (
 // @BasePath /api/v1
 
 type Handler struct {
-	// TODO: Add dependencies
+	tokenManger auth.TokenManager
+	services    *service.Service
 }
 
 func New() *Handler {
