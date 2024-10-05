@@ -30,6 +30,6 @@ logger:
 
 ## Разработчики
 Разработкой сервера занимались:
-- [Mutalibov Alaudin](https://github.com/KrizzMU)
+- [Mutalibov Alan](https://github.com/AlanMute)
 - [Paradeev Nikolay](https://github.com/Cr4z1k)
 - [Fadeev Vsevolod](https://github.com/fFH255)
