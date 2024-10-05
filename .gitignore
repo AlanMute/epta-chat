@@ -1,10 +1,8 @@
-internal/db/sql
-lessons
-./lessons/
-./images/
 .env
 ./db/sql
-./lessons
-./static/letters
-./internal/config/emailConf/conf.yaml
 .idea/
+docs
+dist
+logs
+*.log
+*.yaml
