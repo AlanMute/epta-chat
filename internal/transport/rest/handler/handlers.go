@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"net/http"
+
 	"github.com/KrizzMU/coolback-alkol/internal/service"
 	"github.com/KrizzMU/coolback-alkol/pkg/auth"
 	"github.com/gin-gonic/gin"
@@ -28,6 +30,25 @@ func (h *Handler) InitRoutes() *gin.Engine {
 	r.Use(gin.Recovery())
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
+
+	chat := r.Group("/chat")
+	{
+		chat.Handle(http.MethodGet, "/all", h.GetChats)
+		chat.Handle(http.MethodGet, "/:id", h.GetChatById)
+		chat.Handle(http.MethodGet, "/members/:id", h.GetChatMembers)
+		chat.Handle(http.MethodPost, "/", h.AddChat)
+		chat.Handle(http.MethodDelete, "/:id", h.DeleteChat)
+	}
+
+	contacts := r.Group("/contacts")
+	{
+		contacts.Handle(http.MethodGet, "/all", h.GetContacts)
+		contacts.Handle(http.MethodGet, "/:id", h.GetContactById)
+		chat.Handle(http.MethodPost, "/", h.AddContact)
+		chat.Handle(http.MethodDelete, "/:id", h.DeleteContact)
+	}
+
+	//TODO: user opertion
 
 	return r
 }
