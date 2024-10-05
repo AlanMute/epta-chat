@@ -48,7 +48,7 @@ func (h *Handler) AddContact(c *gin.Context) {
 
 	var info AddContact
 	if err := c.ShouldBindJSON(&info); err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 

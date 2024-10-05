@@ -31,7 +31,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
-	chat := r.Group("/chat")
+	chat := r.Group("/chat") //TODO: make middleware
 	{
 		chat.Handle(http.MethodGet, "/all", h.GetChats)
 		chat.Handle(http.MethodGet, "/:id", h.GetChatById)
@@ -48,7 +48,12 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		chat.Handle(http.MethodDelete, "/:id", h.DeleteContact)
 	}
 
-	//TODO: user opertion
+	user := r.Group("/user")
+	{
+		user.Handle(http.MethodPost, "/sign-in", h.SignIn)
+		user.Handle(http.MethodPost, "/sign-up", h.SignUp)
+		user.Handle(http.MethodPost, "/refresh", h.Refresh)
+	}
 
 	return r
 }

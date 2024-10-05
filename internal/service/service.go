@@ -22,19 +22,15 @@ type Chat interface {
 }
 
 type User interface {
-	Add(login, password string) error
-}
-
-type Session interface {
-	Add(session core.Session) error
-	CheckRefresh(token string) error
+	SignIn(login, password string) (core.Tokens, error)
+	SignUp(login, password string) error
+	Refresh(userId uint64, refreshToken string) (string, error)
 }
 
 type Service struct {
 	Contact
 	Chat
 	User
-	Session
 }
 
 func NewRepository(repo *repository.Repository, t auth.TokenManager) *Service {

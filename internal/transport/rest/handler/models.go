@@ -9,3 +9,12 @@ type AddChat struct {
 type AddContact struct {
 	ContactId uint64 `json:"contact_id"`
 }
+
+type Sign struct {
+	Login    string `json:"login"`
+	Password string `json:"password"`
+}
+
+type Refresh struct {
+	Token string `json:"token"`
+}

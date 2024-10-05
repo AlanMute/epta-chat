@@ -22,7 +22,7 @@ func NewUserSevice(repo repository.User, t auth.TokenManager) *UserService {
 	}
 }
 
-func (s *UserService) Add(login, password string) error {
+func (s *UserService) SignUp(login, password string) error {
 	hashPsw, err := s.hashPassword(password)
 	if err != nil {
 		return err
