@@ -4,8 +4,6 @@ import (
 	"github.com/gin-gonic/gin"
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
-
-	_ "github.com/KrizzMU/coolback-alkol/docs"
 )
 
 // @title Messenger API

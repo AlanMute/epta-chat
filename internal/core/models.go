@@ -26,7 +26,7 @@ type Contact struct {
 	Contact  User `gorm:"foreignKey:ConactId"`
 }
 
-type Token struct {
+type Session struct {
 	GormModel
 
 	UserId         uint64

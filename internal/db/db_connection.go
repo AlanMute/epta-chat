@@ -19,8 +19,8 @@ func GetConnection() *gorm.DB {
 	db.AutoMigrate(&core.Contact{})
 	db.Model(&core.Contact{}).AddForeignKey("owner_id", "user(id)", "CASCADE", "CASCADE").AddForeignKey("contact_id", "user(id)", "CASCADE", "CASCADE")
 
-	db.AutoMigrate(&core.Token{})
-	db.Model(&core.Token{}).AddForeignKey("user_id", "user(id)", "CASCADE", "CASCADE")
+	db.AutoMigrate(&core.Session{})
+	db.Model(&core.Session{}).AddForeignKey("user_id", "user(id)", "CASCADE", "CASCADE")
 
 	db.AutoMigrate(&core.Chat{})
 

@@ -1,0 +1,4 @@
+host: "eptadb"
+port: "5432"
+dbname: "eptanitdb"
+user: "eptanit"
