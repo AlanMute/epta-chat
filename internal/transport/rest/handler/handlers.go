@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"github.com/KrizzMU/coolback-alkol/internal/core/messenger/domain/model"
+	"github.com/gorilla/websocket"
 	"net/http"
 
 	"github.com/KrizzMU/coolback-alkol/internal/service"
@@ -8,6 +10,8 @@ import (
 	"github.com/gin-gonic/gin"
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
+
+	_ "github.com/KrizzMU/coolback-alkol/docs"
 )
 
 // @title Messenger API
@@ -17,10 +21,18 @@ import (
 type Handler struct {
 	tokenManger auth.TokenManager
 	services    *service.Service
+	upgrader    *websocket.Upgrader
+	messenger   *model.Messenger
 }
 
-func New() *Handler {
-	return &Handler{}
+func New(messenger *model.Messenger) *Handler {
+	return &Handler{
+		messenger: messenger,
+		upgrader: &websocket.Upgrader{
+			ReadBufferSize:  1024,
+			WriteBufferSize: 1024,
+		},
+	}
 }
 
 func (h *Handler) InitRoutes() *gin.Engine {
@@ -44,8 +56,8 @@ func (h *Handler) InitRoutes() *gin.Engine {
 	{
 		contacts.Handle(http.MethodGet, "/all", h.GetContacts)
 		contacts.Handle(http.MethodGet, "/:id", h.GetContactById)
-		chat.Handle(http.MethodPost, "/", h.AddContact)
-		chat.Handle(http.MethodDelete, "/:id", h.DeleteContact)
+		contacts.Handle(http.MethodPost, "/", h.AddContact)
+		contacts.Handle(http.MethodDelete, "/:id", h.DeleteContact)
 	}
 
 	user := r.Group("/user")
@@ -53,6 +65,11 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		user.Handle(http.MethodPost, "/sign-in", h.SignIn)
 		user.Handle(http.MethodPost, "/sign-up", h.SignUp)
 		user.Handle(http.MethodPost, "/refresh", h.Refresh)
+	}
+
+	messenger := r.Group("/messenger")
+	{
+		messenger.Handle(http.MethodGet, "/connect", h.Connect)
 	}
 
 	return r
