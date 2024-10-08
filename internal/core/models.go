@@ -22,8 +22,8 @@ type Contact struct {
 	OwnerId uint64
 	Owner   User `gorm:"foreignKey:OwnerId"`
 
-	ConactId uint64
-	Contact  User `gorm:"foreignKey:ConactId"`
+	ContactId uint64
+	Contact   User `gorm:"foreignKey:ContactId"`
 }
 
 type Session struct {
