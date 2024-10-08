@@ -8,7 +8,6 @@ import (
 	"github.com/KrizzMU/coolback-alkol/internal/transport/rest"
 	"github.com/KrizzMU/coolback-alkol/internal/transport/rest/handler"
 	"github.com/KrizzMU/coolback-alkol/pkg/logger/sl"
-	redisclient "github.com/KrizzMU/coolback-alkol/pkg/redis-client"
 	"os"
 	"os/signal"
 	"syscall"
@@ -20,15 +19,6 @@ func main() {
 
 	log := sl.SetupLogger(cfg.Env, cfg.Logger)
 	log.With("config", cfg).Info("Application start!")
-
-	// Redis
-	redisClient := redisclient.New(&redisclient.Config{
-		Address: "localhost:6379",
-	})
-
-	defer func() {
-		_ = redisClient.Close()
-	}()
 
 	// DI
 	messenger := model.NewMessenger()

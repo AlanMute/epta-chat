@@ -11,7 +11,7 @@ import (
 
 type TokenManager interface {
 	Parse(accessToken string) (string, error)
-	NewAccessToken(role string, ttl time.Duration) (string, error)
+	NewAccessToken(id string, ttl time.Duration) (string, error)
 	NewRefreshToken() (string, error)
 }
 
@@ -27,10 +27,10 @@ func NewManager(signingKey string) (*Manager, error) {
 	return &Manager{signingKey: signingKey}, nil
 }
 
-func (m *Manager) NewAccessToken(role string, ttl time.Duration) (string, error) {
+func (m *Manager) NewAccessToken(id string, ttl time.Duration) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.RegisteredClaims{
 		ExpiresAt: jwt.NewNumericDate(time.Now().Add(ttl)),
-		Subject:   role,
+		Subject:   id,
 	})
 
 	return token.SignedString([]byte(m.signingKey))
@@ -64,7 +64,7 @@ func (m *Manager) Parse(accessToken string) (string, error) {
 
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if !ok {
-		return "", errors.New("Token claims are not of type tokenClaims")
+		return "", errors.New("token claims are not of type tokenClaims")
 	}
 
 	return claims["sub"].(string), nil

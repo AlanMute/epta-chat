@@ -1,5 +1,5 @@
 version: '3.9'
-services:
+#services:
 #  epta-app:
 #    container_name: eptagolang
 #    build: ./
@@ -26,17 +26,6 @@ services:
 #      - '5436:5432'
 #    networks:
 #      - eptastack
-
-  redis:
-    restart: always
-    image: redis:latest
-    container_name: msg-redis
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis-data:/var/lib/redis/data
-    networks:
-      - net
 
 networks:
   net:
