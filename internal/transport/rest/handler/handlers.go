@@ -43,7 +43,9 @@ func (h *Handler) InitRoutes() *gin.Engine {
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
-	chat := r.Group("/chat") //TODO: make middleware
+	v1 := r.Group("api/v1")
+
+	chat := v1.Group("/chat") //TODO: make middleware
 	{
 		chat.Handle(http.MethodGet, "/all", h.GetChats)
 		chat.Handle(http.MethodGet, "/:id", h.GetChatById)
@@ -52,22 +54,22 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		chat.Handle(http.MethodDelete, "/:id", h.DeleteChat)
 	}
 
-	contacts := r.Group("/contacts")
+	contact := v1.Group("/contact")
 	{
-		contacts.Handle(http.MethodGet, "/all", h.GetContacts)
-		contacts.Handle(http.MethodGet, "/:id", h.GetContactById)
-		contacts.Handle(http.MethodPost, "/", h.AddContact)
-		contacts.Handle(http.MethodDelete, "/:id", h.DeleteContact)
+		contact.Handle(http.MethodGet, "/all", h.GetContacts)
+		contact.Handle(http.MethodGet, "/:id", h.GetContactById)
+		contact.Handle(http.MethodPost, "/", h.AddContact)
+		contact.Handle(http.MethodDelete, "/:id", h.DeleteContact)
 	}
 
-	user := r.Group("/user")
+	user := v1.Group("/user")
 	{
 		user.Handle(http.MethodPost, "/sign-in", h.SignIn)
 		user.Handle(http.MethodPost, "/sign-up", h.SignUp)
 		user.Handle(http.MethodPost, "/refresh", h.Refresh)
 	}
 
-	messenger := r.Group("/messenger")
+	messenger := v1.Group("/messenger")
 	{
 		messenger.Handle(http.MethodGet, "/connect", h.Connect)
 	}
