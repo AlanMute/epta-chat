@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"time"
+
 	"github.com/KrizzMU/coolback-alkol/internal/core"
 	"github.com/jinzhu/gorm"
 )
@@ -27,10 +29,15 @@ type User interface {
 	CheckRefresh(token string) error
 }
 
+type Message interface {
+	Send(text string, senderId, chatId uint64, sendingTime time.Time) error
+}
+
 type Repository struct {
 	Contact
 	Chat
 	User
+	Message
 }
 
 func NewRepository(db *gorm.DB) *Repository {
@@ -38,5 +45,6 @@ func NewRepository(db *gorm.DB) *Repository {
 		Contact: NewContactPostgres(db),
 		Chat:    NewChatPostgres(db),
 		User:    NewUserPostgres(db),
+		Message: NewMessagePostgres(db),
 	}
 }
