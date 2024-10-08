@@ -8,8 +8,8 @@ import (
 )
 
 type Contact interface {
-	Add(ownerId, сontact uint64) error
-	Delete(ownerId, сontact uint64) error
+	Add(ownerId, contactId uint64) error
+	Delete(ownerId, contactId uint64) error
 	GetAll(ownerId uint64) ([]core.UserInfo, error)
 	GetById(id uint64) (core.UserInfo, error)
 }

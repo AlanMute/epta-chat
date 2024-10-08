@@ -2,8 +2,12 @@ package handler
 
 import (
 	"github.com/KrizzMU/coolback-alkol/internal/core/messenger/domain/model"
-	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
+	"net/http"
+
+	"github.com/KrizzMU/coolback-alkol/internal/service"
+	"github.com/KrizzMU/coolback-alkol/pkg/auth"
+	"github.com/gin-gonic/gin"
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 
@@ -15,16 +19,18 @@ import (
 // @BasePath /api/v1
 
 type Handler struct {
-	messenger *model.Messenger
-	upgrader  *websocket.Upgrader
+	tokenManger auth.TokenManager
+	services    *service.Service
+	upgrader    *websocket.Upgrader
+	messenger   *model.Messenger
 }
 
 func New(messenger *model.Messenger) *Handler {
 	return &Handler{
 		messenger: messenger,
 		upgrader: &websocket.Upgrader{
-			ReadBufferSize:  4096,
-			WriteBufferSize: 4096,
+			ReadBufferSize:  1024,
+			WriteBufferSize: 1024,
 		},
 	}
 }
@@ -37,11 +43,34 @@ func (h *Handler) InitRoutes() *gin.Engine {
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
-	v1 := r.Group("api/v1")
+	chat := r.Group("/chat") //TODO: make middleware
+	{
+		chat.Handle(http.MethodGet, "/all", h.GetChats)
+		chat.Handle(http.MethodGet, "/:id", h.GetChatById)
+		chat.Handle(http.MethodGet, "/members/:id", h.GetChatMembers)
+		chat.Handle(http.MethodPost, "/", h.AddChat)
+		chat.Handle(http.MethodDelete, "/:id", h.DeleteChat)
+	}
 
-	messengerGroup := v1.Group("/messenger")
+	contacts := r.Group("/contacts")
+	{
+		contacts.Handle(http.MethodGet, "/all", h.GetContacts)
+		contacts.Handle(http.MethodGet, "/:id", h.GetContactById)
+		contacts.Handle(http.MethodPost, "/", h.AddContact)
+		contacts.Handle(http.MethodDelete, "/:id", h.DeleteContact)
+	}
 
-	messengerGroup.GET("/connect", h.Connect)
+	user := r.Group("/user")
+	{
+		user.Handle(http.MethodPost, "/sign-in", h.SignIn)
+		user.Handle(http.MethodPost, "/sign-up", h.SignUp)
+		user.Handle(http.MethodPost, "/refresh", h.Refresh)
+	}
+
+	messenger := r.Group("/messenger")
+	{
+		messenger.Handle(http.MethodGet, "/connect", h.Connect)
+	}
 
 	return r
 }
