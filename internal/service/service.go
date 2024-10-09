@@ -33,7 +33,7 @@ type Service struct {
 	User
 }
 
-func NewRepository(repo *repository.Repository, t auth.TokenManager) *Service {
+func New(repo *repository.Repository, t auth.TokenManager) *Service {
 	return &Service{
 		Contact: NewContactSevice(repo.Contact),
 		Chat:    NewChatSevice(repo.Chat),
