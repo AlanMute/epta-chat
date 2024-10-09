@@ -40,7 +40,7 @@ type Repository struct {
 	Message
 }
 
-func NewRepository(db *gorm.DB) *Repository {
+func New(db *gorm.DB) *Repository {
 	return &Repository{
 		Contact: NewContactPostgres(db),
 		Chat:    NewChatPostgres(db),

@@ -17,18 +17,18 @@ func GetConnection() *gorm.DB {
 	db.AutoMigrate(&core.User{})
 
 	db.AutoMigrate(&core.Contact{})
-	db.Model(&core.Contact{}).AddForeignKey("owner_id", "user(id)", "CASCADE", "CASCADE").AddForeignKey("contact_id", "user(id)", "CASCADE", "CASCADE")
+	db.Model(&core.Contact{}).AddForeignKey("owner_id", "users(id)", "CASCADE", "CASCADE").AddForeignKey("contact_id", "users(id)", "CASCADE", "CASCADE")
 
 	db.AutoMigrate(&core.Session{})
-	db.Model(&core.Session{}).AddForeignKey("user_id", "user(id)", "CASCADE", "CASCADE")
+	db.Model(&core.Session{}).AddForeignKey("user_id", "users(id)", "CASCADE", "CASCADE")
 
 	db.AutoMigrate(&core.Chat{})
 
 	db.AutoMigrate(&core.ChatMembers{})
-	db.Model(&core.ChatMembers{}).AddForeignKey("chat_id", "chat(id)", "CASCADE", "CASCADE").AddForeignKey("member_id", "user(id)", "CASCADE", "CASCADE")
+	db.Model(&core.ChatMembers{}).AddForeignKey("chat_id", "chats(id)", "CASCADE", "CASCADE").AddForeignKey("member_id", "users(id)", "CASCADE", "CASCADE")
 
 	db.AutoMigrate(&core.Message{})
-	db.Model(&core.ChatMembers{}).AddForeignKey("sender_id", "user(id)", "CASCADE", "CASCADE").AddForeignKey("chat_id", "chat(id)", "CASCADE", "CASCADE")
+	db.Model(&core.Message{}).AddForeignKey("sender_id", "users(id)", "CASCADE", "CASCADE").AddForeignKey("chat_id", "chats(id)", "CASCADE", "CASCADE")
 
 	return db
 }

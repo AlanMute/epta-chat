@@ -30,10 +30,7 @@ func GetConnectionString() string {
 		panic(err)
 	}
 
-	fmt.Printf("user=%s password=%s dbname=%s host=%s port=%s sslmode=disable\n", config.User, os.Getenv("DB_PASSWORD"),
-		config.Dbname, config.Host, config.Port)
-
-	connectionString := fmt.Sprintf("user=%s password=%s dbname=%s host=%s port=%s sslmode=disable", config.User, os.Getenv("DB_PASSWORD"),
+	connectionString := fmt.Sprintf("user=%s password=%s dbname=%s host=%s port=%s sslmode=disable", config.User, config.Password,
 		config.Dbname, config.Host, config.Port)
 
 	return connectionString

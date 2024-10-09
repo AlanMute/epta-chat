@@ -25,9 +25,15 @@ type Handler struct {
 	messenger   *model.Messenger
 }
 
-func New(messenger *model.Messenger) *Handler {
+func New(
+	tokenManager auth.TokenManager,
+	services *service.Service,
+	messenger *model.Messenger,
+) *Handler {
 	return &Handler{
-		messenger: messenger,
+		tokenManger: tokenManager,
+		services:    services,
+		messenger:   messenger,
 		upgrader: &websocket.Upgrader{
 			ReadBufferSize:  1024,
 			WriteBufferSize: 1024,

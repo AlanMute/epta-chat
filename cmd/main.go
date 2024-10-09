@@ -5,8 +5,12 @@ import (
 	"fmt"
 	"github.com/KrizzMU/coolback-alkol/internal/config"
 	"github.com/KrizzMU/coolback-alkol/internal/core/messenger/domain/model"
+	db2 "github.com/KrizzMU/coolback-alkol/internal/db"
+	"github.com/KrizzMU/coolback-alkol/internal/repository"
+	"github.com/KrizzMU/coolback-alkol/internal/service"
 	"github.com/KrizzMU/coolback-alkol/internal/transport/rest"
 	"github.com/KrizzMU/coolback-alkol/internal/transport/rest/handler"
+	"github.com/KrizzMU/coolback-alkol/pkg/auth"
 	"github.com/KrizzMU/coolback-alkol/pkg/logger/sl"
 	"os"
 	"os/signal"
@@ -20,7 +24,19 @@ func main() {
 	log := sl.SetupLogger(cfg.Env, cfg.Logger)
 	log.With("config", cfg).Info("Application start!")
 
+	db := db2.GetConnection()
+
 	// DI
+
+	repositories := repository.New(db)
+
+	tokenManager, err := auth.NewManager("hello-world")
+	if err != nil {
+		panic(err)
+	}
+
+	services := service.New(repositories, tokenManager)
+
 	messenger := model.NewMessenger()
 
 	// Create test chats
@@ -28,7 +44,7 @@ func main() {
 	messenger.CreateChat(1)
 
 	// Setup REST server
-	h := handler.New(messenger)
+	h := handler.New(tokenManager, services, messenger)
 	s := rest.New(cfg.Server, h.InitRoutes())
 
 	// Graceful shutdown
