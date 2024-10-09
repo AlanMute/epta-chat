@@ -16,7 +16,7 @@ import (
 // @Accept json
 // @Produce json
 // @Param body body Sign true "Данные для регистрации"
-// @Router /sign-up [post]
+// @Router /user/sign-up [post]
 // @Success 200 "Регистрация выполнена"
 // @Failure 400 {object} resp.ErrorResponse "Запрос не правильно составлен"
 // @Failure 500 {object} resp.ErrorResponse "Возникла внутренняя ошибка"
@@ -47,7 +47,7 @@ func (h *Handler) SignUp(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param body body Sign true "Данные для регистрации"
-// @Router /sign-in [post]
+// @Router /user/sign-in [post]
 // @Success 200 "Вход выполнен"
 // @Failure 400 {object} resp.ErrorResponse "Запрос не правильно составлен"
 // @Failure 500 {object} resp.ErrorResponse "Возникла внутренняя ошибка"
@@ -80,7 +80,7 @@ func (h *Handler) SignIn(c *gin.Context) {
 // @Produce json
 // @Param user-id query int true "ID пользователя"
 // @Param body body Refresh true "Данные для регистрации"
-// @Router /refresh [post]
+// @Router /user/refresh [post]
 // @Success 200 "Токены обновлены"
 // @Failure 400 {object} resp.ErrorResponse "Запрос не правильно составлен"
 // @Failure 500 {object} resp.ErrorResponse "Возникла внутренняя ошибка"

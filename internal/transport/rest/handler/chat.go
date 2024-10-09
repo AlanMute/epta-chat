@@ -20,7 +20,7 @@ import (
 // @Failure 400 {object} resp.ErrorResponse "Запрос не правильно составлен"
 // @Failure 500 {object} resp.ErrorResponse "Возникла внутренняя ошибка"
 func (h *Handler) GetChats(c *gin.Context) {
-	userId, err := strconv.Atoi(c.Param("user-id")) //TODO: need will check token
+	userId, err := strconv.Atoi(c.Query("user-id")) //TODO: need will check token
 	if err != nil {
 		c.JSON(http.StatusBadRequest, resp.Error("Invalid user id"))
 		return
@@ -116,7 +116,7 @@ func (h *Handler) GetChatMembers(c *gin.Context) {
 // @Failure 400 {object} resp.ErrorResponse "Запрос не правильно составлен"
 // @Failure 500 {object} resp.ErrorResponse "Возникла внутренняя ошибка"
 func (h *Handler) AddChat(c *gin.Context) {
-	userId, err := strconv.Atoi(c.Param("user-id")) //TODO: need will check token
+	userId, err := strconv.Atoi(c.Query("user-id")) //TODO: need will check token
 	if err != nil {
 		c.JSON(http.StatusBadRequest, resp.Error("Invalid user id"))
 		return
