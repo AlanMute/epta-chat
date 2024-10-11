@@ -35,14 +35,9 @@ func (s *UserService) SignUp(login, password string) error {
 }
 
 func (s *UserService) SignIn(login, password string) (core.Tokens, error) {
-	hashPsw, err := s.hashPassword(password)
-	if err != nil {
-		return core.Tokens{}, err
-	}
-
 	userId, err := s.repo.SignIn(core.User{
 		Login:    login,
-		Password: hashPsw,
+		Password: password,
 	})
 	if err != nil {
 		return core.Tokens{}, err
