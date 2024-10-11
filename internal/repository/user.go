@@ -38,6 +38,22 @@ func (r *UserRepo) SignIn(user core.User) (uint64, error) {
 	return dbUser.ID, nil
 }
 
+func (r *UserRepo) SetUserName(userId uint64, userName string) error {
+	var user core.User
+
+	if result := r.db.First(&user, userId); result.Error != nil {
+		return result.Error
+	}
+
+	user.UserName = userName
+
+	if result := r.db.Save(&user); result.Error != nil {
+		return result.Error
+	}
+
+	return nil
+}
+
 func (r *UserRepo) SignUp(user core.User) error {
 	if result := r.db.Create(&user); result.Error != nil {
 		return result.Error

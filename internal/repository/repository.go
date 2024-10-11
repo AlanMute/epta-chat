@@ -26,6 +26,7 @@ type Chat interface {
 type User interface {
 	SignIn(user core.User) (uint64, error)
 	SignUp(user core.User) error
+	SetUserName(userId uint64, userName string) error
 	AddSession(session core.Session) error
 	CheckRefresh(token string) error
 }
