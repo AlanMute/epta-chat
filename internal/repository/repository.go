@@ -16,6 +16,7 @@ type Contact interface {
 
 type Chat interface {
 	Add(name string, isDirect bool, ownerId uint64, members []uint64) (uint64, error)
+	AddMember(ownerId, chatId uint64, members []uint64) error
 	Delete(userId, chatId uint64) error
 	GetById(userId, chatId uint64) (core.Chat, error)
 	GetAll(userId uint64) ([]core.Chat, error)

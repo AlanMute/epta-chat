@@ -40,7 +40,7 @@ func (r *ChatRepo) Add(name string, isDirect bool, ownerId uint64, members []uin
 
 	for _, memberId := range members {
 		var existingMember core.ChatMembers
-		if err := r.db.Where("chat_id = ? AND member_id = ?", newChat.ID, memberId).First(&existingMember).Error; err == nil {
+		if err := tx.Where("chat_id = ? AND member_id = ?", newChat.ID, memberId).First(&existingMember).Error; err == nil {
 			continue
 		}
 
@@ -49,7 +49,7 @@ func (r *ChatRepo) Add(name string, isDirect bool, ownerId uint64, members []uin
 			ChatId:   newChat.ID,
 		}
 
-		if err := r.db.Create(&newMember).Error; err != nil {
+		if err := tx.Create(&newMember).Error; err != nil {
 			tx.Rollback()
 			return 0, err
 		}
@@ -60,6 +60,52 @@ func (r *ChatRepo) Add(name string, isDirect bool, ownerId uint64, members []uin
 	}
 
 	return newChat.ID, nil
+}
+
+func (r *ChatRepo) AddMember(ownerId, chatId uint64, members []uint64) error {
+	var chat core.Chat
+
+	if result := r.db.Where("id = ?", chatId).First(&chat); result.Error != nil {
+		return result.Error
+	}
+
+	if ownerId != chat.OwnerId {
+		return fmt.Errorf("not an owner of this chat")
+	}
+
+	if chat.IsDirect {
+		return fmt.Errorf("direct chat cannot has more than 2 members")
+	}
+
+	tx := r.db.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	for _, memberId := range members {
+		var existingMember core.ChatMembers
+		if err := tx.Where("chat_id = ? AND member_id = ?", chatId, memberId).First(&existingMember).Error; err == nil {
+			continue
+		}
+
+		newMember := core.ChatMembers{
+			MemberId: memberId,
+			ChatId:   chatId,
+		}
+
+		if err := tx.Create(&newMember).Error; err != nil {
+			tx.Rollback()
+			return err
+		}
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (r *ChatRepo) Delete(userId, chatId uint64) error {
