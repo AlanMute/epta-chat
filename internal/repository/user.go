@@ -6,6 +6,7 @@ import (
 
 	"github.com/KrizzMU/coolback-alkol/internal/core"
 	"github.com/jinzhu/gorm"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type UserRepo struct {
@@ -20,7 +21,9 @@ func NewUserPostgres(db *gorm.DB) *UserRepo {
 }
 
 func (r *UserRepo) SignIn(user core.User) (uint64, error) {
-	if result := r.db.Where("login = ? AND password = ?", user.Login, user.Password).First(&user); result.Error != nil {
+	var dbUser core.User
+
+	if result := r.db.Where("login = ?", user.Login).First(&dbUser); result.Error != nil {
 		if gorm.IsRecordNotFoundError(result.Error) {
 			return 0, fmt.Errorf("login or password is incorrect")
 		}
@@ -28,7 +31,11 @@ func (r *UserRepo) SignIn(user core.User) (uint64, error) {
 		return 0, result.Error
 	}
 
-	return 0, nil
+	if bcrypt.CompareHashAndPassword([]byte(dbUser.Password), []byte(user.Password)) != nil {
+		return 0, fmt.Errorf("login or password is incorrect")
+	}
+
+	return dbUser.ID, nil
 }
 
 func (r *UserRepo) SignUp(user core.User) error {
