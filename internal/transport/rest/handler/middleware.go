@@ -32,8 +32,10 @@ func (h *Handler) isLogedIn(c *gin.Context) {
 		return
 	}
 
-	if id != "" {
+	if id == "" {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, "Access denied")
 		return
 	}
+
+	c.AddParam("user-id", id)
 }
