@@ -19,12 +19,14 @@ type Chat interface {
 	GetById(userId, chatId uint64) (core.Chat, error)
 	GetAll(userId uint64) ([]core.Chat, error)
 	GetMembers(userId, chatId uint64) ([]core.UserInfo, error)
+	AddMember(ownerId, chatId uint64, members []uint64) error
 }
 
 type User interface {
-	SignIn(login, password string) (core.Tokens, error)
+	SignIn(login, password string) (uint64, core.Tokens, error)
 	SignUp(login, password string) error
 	Refresh(userId uint64, refreshToken string) (string, error)
+	SetUserName(userId uint64, userName string) error
 }
 
 type Service struct {

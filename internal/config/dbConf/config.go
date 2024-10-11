@@ -5,6 +5,7 @@ import (
 	"os"
 
 	_ "github.com/lib/pq"
+	"github.com/sirupsen/logrus"
 	"gopkg.in/yaml.v3"
 )
 
@@ -17,7 +18,6 @@ type Config struct {
 }
 
 func GetConnectionString() string {
-
 	configData, err := os.ReadFile("./internal/config/dbConf/conf.yaml")
 	if err != nil {
 		panic(err)
@@ -32,6 +32,8 @@ func GetConnectionString() string {
 
 	connectionString := fmt.Sprintf("user=%s password=%s dbname=%s host=%s port=%s sslmode=disable", config.User, config.Password,
 		config.Dbname, config.Host, config.Port)
+
+	logrus.Info(connectionString)
 
 	return connectionString
 }

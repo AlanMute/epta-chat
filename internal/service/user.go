@@ -7,6 +7,7 @@ import (
 	"github.com/KrizzMU/coolback-alkol/internal/core"
 	"github.com/KrizzMU/coolback-alkol/internal/repository"
 	"github.com/KrizzMU/coolback-alkol/pkg/auth"
+	"github.com/sirupsen/logrus"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -28,40 +29,47 @@ func (s *UserService) SignUp(login, password string) error {
 		return err
 	}
 
+	logrus.Info(password)
+	logrus.Info(hashPsw)
+
+	tempHash, _ := s.hashPassword(password)
+	logrus.Info(tempHash)
+
 	return s.repo.SignUp(core.User{
 		Login:    login,
 		Password: hashPsw,
 	})
 }
 
-func (s *UserService) SignIn(login, password string) (core.Tokens, error) {
+func (s *UserService) SignIn(login, password string) (uint64, core.Tokens, error) {
 	userId, err := s.repo.SignIn(core.User{
 		Login:    login,
 		Password: password,
 	})
 	if err != nil {
-		return core.Tokens{}, err
+		return userId, core.Tokens{}, err
 	}
 
 	accessToken, err := s.tokenManager.NewAccessToken(strconv.FormatUint(userId, 10), time.Hour)
 	if err != nil {
-		return core.Tokens{}, err
+		return userId, core.Tokens{}, err
 	}
 
 	refreshToken, err := s.tokenManager.NewRefreshToken()
 	if err != nil {
-		return core.Tokens{}, err
+		return userId, core.Tokens{}, err
 	}
 
 	t := time.Now().AddDate(0, 0, 30)
 	session := core.Session{
+		UserId:         userId,
 		RefreshToken:   refreshToken,
 		ExpirationTime: t,
 	}
 
 	if err := s.repo.AddSession(session); err != nil {
 
-		return core.Tokens{}, nil
+		return userId, core.Tokens{}, nil
 	}
 
 	token := core.Tokens{
@@ -69,11 +77,14 @@ func (s *UserService) SignIn(login, password string) (core.Tokens, error) {
 		RefreshToken: refreshToken,
 	}
 
-	return token, nil
+	return userId, token, nil
+}
+
+func (s *UserService) SetUserName(userId uint64, userName string) error {
+	return s.repo.SetUserName(userId, userName)
 }
 
 func (s *UserService) Refresh(userId uint64, refreshToken string) (string, error) {
-
 	if err := s.repo.CheckRefresh(refreshToken); err != nil {
 		return "", err
 	}

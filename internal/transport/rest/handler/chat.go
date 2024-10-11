@@ -1,9 +1,10 @@
 package handler
 
 import (
-	"github.com/KrizzMU/coolback-alkol/pkg/api/resp"
 	"net/http"
 	"strconv"
+
+	"github.com/KrizzMU/coolback-alkol/pkg/api/resp"
 
 	"github.com/gin-gonic/gin"
 )
@@ -20,7 +21,7 @@ import (
 // @Failure 400 {object} resp.ErrorResponse "Запрос не правильно составлен"
 // @Failure 500 {object} resp.ErrorResponse "Возникла внутренняя ошибка"
 func (h *Handler) GetChats(c *gin.Context) {
-	userId, err := strconv.Atoi(c.Query("user-id")) //TODO: need will check token
+	userId, err := strconv.Atoi(c.Param("user-id")) //TODO: need will check token
 	if err != nil {
 		c.JSON(http.StatusBadRequest, resp.Error("Invalid user id"))
 		return
@@ -73,7 +74,6 @@ func (h *Handler) GetChatById(c *gin.Context) {
 // @Summary Получить список участников чата
 // @Description Получить список участников чата
 // @Tags Chat
-// @Param user-id query int true "ID пользователя"
 // @Param id path int true "ID чата"
 // @Accept json
 // @Produce json
@@ -107,7 +107,6 @@ func (h *Handler) GetChatMembers(c *gin.Context) {
 // @Summary Создать чат
 // @Description Создать чат
 // @Tags Chat
-// @Param user-id query int true "ID пользователя"
 // @Param body body AddChat true "Данные для создания чата"
 // @Accept json
 // @Produce json
@@ -116,7 +115,7 @@ func (h *Handler) GetChatMembers(c *gin.Context) {
 // @Failure 400 {object} resp.ErrorResponse "Запрос не правильно составлен"
 // @Failure 500 {object} resp.ErrorResponse "Возникла внутренняя ошибка"
 func (h *Handler) AddChat(c *gin.Context) {
-	userId, err := strconv.Atoi(c.Query("user-id")) //TODO: need will check token
+	userId, err := strconv.Atoi(c.Param("user-id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, resp.Error("Invalid user id"))
 		return
@@ -128,7 +127,42 @@ func (h *Handler) AddChat(c *gin.Context) {
 		return
 	}
 
-	_, err = h.services.Chat.Add(info.Name, info.IsDirect, uint64(userId), info.Members) //TODO: create chat for socket
+	id, err := h.services.Chat.Add(info.Name, info.IsDirect, uint64(userId), info.Members)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, resp.Error(err.Error()))
+		return
+	}
+
+	h.messenger.CreateChat(int(id))
+
+	c.Status(http.StatusCreated)
+}
+
+// AddChat godoc
+// @Summary Создать чат
+// @Description Создать чат
+// @Tags Chat
+// @Param body body AddMember true "Список users_id"
+// @Accept json
+// @Produce json
+// @Router /chat/add/members [post]
+// @Success 201 "Чат создан"
+// @Failure 400 {object} resp.ErrorResponse "Запрос не правильно составлен"
+// @Failure 500 {object} resp.ErrorResponse "Возникла внутренняя ошибка"
+func (h *Handler) AddMember(c *gin.Context) {
+	userId, err := strconv.Atoi(c.Param("user-id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, resp.Error("Invalid user id"))
+		return
+	}
+
+	var info AddMember
+	if err := c.ShouldBindJSON(&info); err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, resp.Error(err.Error()))
+		return
+	}
+
+	err = h.services.Chat.AddMember(uint64(userId), info.ChatId, info.Members)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, resp.Error(err.Error()))
 		return
@@ -141,7 +175,6 @@ func (h *Handler) AddChat(c *gin.Context) {
 // @Summary Удалить чат
 // @Description Удалить чат
 // @Tags Chat
-// @Param user-id query int true "ID пользователя"
 // @Param id path int true "ID чата"
 // @Accept json
 // @Produce json
@@ -150,7 +183,7 @@ func (h *Handler) AddChat(c *gin.Context) {
 // @Failure 400 {object} resp.ErrorResponse "Запрос не правильно составлен"
 // @Failure 500 {object} resp.ErrorResponse "Возникла внутренняя ошибка"
 func (h *Handler) DeleteChat(c *gin.Context) {
-	userId, err := strconv.Atoi(c.Param("user-id")) //TODO: need will check token
+	userId, err := strconv.Atoi(c.Param("user-id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, resp.Error("Invalid user id"))
 		return

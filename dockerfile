@@ -13,7 +13,7 @@ RUN apt-get -y install postgresql-client
 
 RUN chmod +x wait-for-postgres.sh
 
-RUN go build -o eptanit ./cmd/main.go
+RUN go build -o eptanit ./cmd/main.go 
 
 EXPOSE 8080
 

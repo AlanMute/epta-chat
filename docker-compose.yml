@@ -1,5 +1,18 @@
 version: '3.9'
 services:
+  epta-app:
+    container_name: eptagolang
+    build: ./
+    ports:
+      - '8000:8080'
+    environment:
+      - DB_PASSWORD=${DB_PASSWORD}
+    networks:
+      - net
+    depends_on:
+      db:
+        condition: service_healthy
+
   db:
     restart: always
     image: postgres:latest
@@ -14,6 +27,11 @@ services:
       - pg-data:/var/lib/postgresql/data
     networks:
       - net
+    healthcheck:
+          test: ["CMD", "pg_isready", "-U", "${DB_USER}"]
+          interval: 5s
+          timeout: 3s
+          retries: 2
 
 networks:
   net:

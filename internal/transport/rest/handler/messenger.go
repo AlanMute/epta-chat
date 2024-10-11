@@ -1,10 +1,11 @@
 package handler
 
 import (
-	"github.com/KrizzMU/coolback-alkol/pkg/api/resp"
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
+
+	"github.com/KrizzMU/coolback-alkol/pkg/api/resp"
+	"github.com/gin-gonic/gin"
 )
 
 // Connect godoc
@@ -31,7 +32,7 @@ func (h *Handler) Connect(c *gin.Context) {
 		return
 	}
 
-	userIDStr := c.Query("user-id")
+	userIDStr := c.Param("user-id")
 	if userIDStr == "" {
 		c.JSON(http.StatusBadRequest, resp.Error("User ID is required"))
 		return

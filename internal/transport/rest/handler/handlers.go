@@ -58,6 +58,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		chat.Handle(http.MethodGet, "/:id", h.GetChatById)
 		chat.Handle(http.MethodGet, "/members/:id", h.GetChatMembers)
 		chat.Handle(http.MethodPost, "/", h.AddChat)
+		chat.Handle(http.MethodPost, "/add/members", h.AddMember)
 		chat.Handle(http.MethodDelete, "/:id", h.DeleteChat)
 	}
 
@@ -73,7 +74,8 @@ func (h *Handler) InitRoutes() *gin.Engine {
 	{
 		user.Handle(http.MethodPost, "/sign-in", h.SignIn)
 		user.Handle(http.MethodPost, "/sign-up", h.SignUp)
-		user.Handle(http.MethodPost, "/refresh", h.Refresh)
+		user.Handle(http.MethodPost, "/refresh/:id", h.Refresh)
+		user.Handle(http.MethodPost, "/set/username", h.isLogedIn, h.SetUsername)
 	}
 
 	messenger := v1.Group("/messenger", h.isLogedIn)

@@ -3,7 +3,12 @@ package handler
 type AddChat struct {
 	Name     string   `json:"name"`
 	IsDirect bool     `json:"is_direct"`
-	Members  []uint64 `json:"course_id"`
+	Members  []uint64 `json:"members_ids"`
+}
+
+type AddMember struct {
+	ChatId  uint64   `json:"chat_id"`
+	Members []uint64 `json:"members_ids"`
 }
 
 type AddContact struct {
@@ -17,4 +22,8 @@ type Sign struct {
 
 type Refresh struct {
 	Token string `json:"token"`
+}
+
+type UserName struct {
+	Username string `json:"username"`
 }

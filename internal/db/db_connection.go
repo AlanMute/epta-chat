@@ -3,6 +3,7 @@ package db
 import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
+	"github.com/sirupsen/logrus"
 
 	dbConfig "github.com/KrizzMU/coolback-alkol/internal/config/dbConf"
 	"github.com/KrizzMU/coolback-alkol/internal/core"
@@ -14,6 +15,7 @@ func GetConnection() *gorm.DB {
 		panic(err)
 	}
 
+	logrus.Info("Stating creating tables")
 	db.AutoMigrate(&core.User{})
 
 	db.AutoMigrate(&core.Contact{})
@@ -29,6 +31,8 @@ func GetConnection() *gorm.DB {
 
 	db.AutoMigrate(&core.Message{})
 	db.Model(&core.Message{}).AddForeignKey("sender_id", "users(id)", "CASCADE", "CASCADE").AddForeignKey("chat_id", "chats(id)", "CASCADE", "CASCADE")
+
+	logrus.Info("Finish creating tables")
 
 	return db
 }
