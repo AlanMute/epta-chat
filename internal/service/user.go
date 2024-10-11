@@ -11,14 +11,14 @@ import (
 )
 
 type UserService struct {
-	repo          repository.User
-	tockenManager auth.TokenManager
+	repo         repository.User
+	tokenManager auth.TokenManager
 }
 
-func NewUserSevice(repo repository.User, t auth.TokenManager) *UserService {
+func NewUserService(repo repository.User, t auth.TokenManager) *UserService {
 	return &UserService{
-		repo:          repo,
-		tockenManager: t,
+		repo:         repo,
+		tokenManager: t,
 	}
 }
 
@@ -48,12 +48,12 @@ func (s *UserService) SignIn(login, password string) (core.Tokens, error) {
 		return core.Tokens{}, err
 	}
 
-	accessToken, err := s.tockenManager.NewAccessToken(strconv.FormatUint(userId, 10), time.Hour)
+	accessToken, err := s.tokenManager.NewAccessToken(strconv.FormatUint(userId, 10), time.Hour)
 	if err != nil {
 		return core.Tokens{}, err
 	}
 
-	refreshToken, err := s.tockenManager.NewRefreshToken()
+	refreshToken, err := s.tokenManager.NewRefreshToken()
 	if err != nil {
 		return core.Tokens{}, err
 	}
@@ -83,7 +83,7 @@ func (s *UserService) Refresh(userId uint64, refreshToken string) (string, error
 		return "", err
 	}
 
-	accessToken, err := s.tockenManager.NewAccessToken(strconv.FormatUint(userId, 10), time.Hour)
+	accessToken, err := s.tokenManager.NewAccessToken(strconv.FormatUint(userId, 10), time.Hour)
 
 	if err != nil {
 		return "", err
