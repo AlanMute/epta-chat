@@ -1,11 +1,8 @@
 {
     "swagger": "2.0",
     "info": {
-        "title": "Messenger API",
-        "contact": {},
-        "version": "0.1"
+        "contact": {}
     },
-    "basePath": "/api/v1",
     "paths": {
         "/chat": {
             "post": {
@@ -22,19 +19,55 @@
                 "summary": "Создать чат",
                 "parameters": [
                     {
-                        "type": "integer",
-                        "description": "ID пользователя",
-                        "name": "user-id",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
                         "description": "Данные для создания чата",
                         "name": "body",
                         "in": "body",
                         "required": true,
                         "schema": {
                             "$ref": "#/definitions/handler.AddChat"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Чат создан"
+                    },
+                    "400": {
+                        "description": "Запрос не правильно составлен",
+                        "schema": {
+                            "$ref": "#/definitions/resp.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Возникла внутренняя ошибка",
+                        "schema": {
+                            "$ref": "#/definitions/resp.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/chat/add/members": {
+            "post": {
+                "description": "Создать чат",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Chat"
+                ],
+                "summary": "Создать чат",
+                "parameters": [
+                    {
+                        "description": "Список users_id",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handler.AddMember"
                         }
                     }
                 ],
@@ -120,13 +153,6 @@
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "ID пользователя",
-                        "name": "user-id",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
                         "description": "ID чата",
                         "name": "id",
                         "in": "path",
@@ -174,13 +200,6 @@
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "ID пользователя",
-                        "name": "user-id",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
                         "description": "ID чата",
                         "name": "id",
                         "in": "path",
@@ -223,13 +242,6 @@
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "ID пользователя",
-                        "name": "user-id",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
                         "description": "ID чата",
                         "name": "id",
                         "in": "path",
@@ -268,15 +280,6 @@
                     "Contact"
                 ],
                 "summary": "Создать контакт",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID пользователя",
-                        "name": "user-id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
                 "responses": {
                     "201": {
                         "description": "Контакт создан"
@@ -308,13 +311,6 @@
                 ],
                 "summary": "Удалить контакт",
                 "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID пользователя",
-                        "name": "user-id",
-                        "in": "query",
-                        "required": true
-                    },
                     {
                         "type": "integer",
                         "description": "ID контакта",
@@ -355,15 +351,6 @@
                     "Contact"
                 ],
                 "summary": "Получить список контактов пользователя",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID пользователя",
-                        "name": "user-id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -453,13 +440,6 @@
                         "name": "chat-id",
                         "in": "query",
                         "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "ID пользователя",
-                        "name": "user-id",
-                        "in": "query",
-                        "required": true
                     }
                 ],
                 "responses": {
@@ -478,7 +458,7 @@
                 }
             }
         },
-        "/user/refresh": {
+        "/user/refresh/{id}": {
             "post": {
                 "description": "Обновить токены",
                 "consumes": [
@@ -670,17 +650,31 @@
         "handler.AddChat": {
             "type": "object",
             "properties": {
-                "course_id": {
+                "is_direct": {
+                    "type": "boolean"
+                },
+                "members_ids": {
                     "type": "array",
                     "items": {
                         "type": "integer"
                     }
                 },
-                "is_direct": {
-                    "type": "boolean"
-                },
                 "name": {
                     "type": "string"
+                }
+            }
+        },
+        "handler.AddMember": {
+            "type": "object",
+            "properties": {
+                "chat_id": {
+                    "type": "integer"
+                },
+                "members_ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
                 }
             }
         },

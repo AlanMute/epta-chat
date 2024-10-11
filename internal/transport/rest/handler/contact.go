@@ -1,9 +1,10 @@
 package handler
 
 import (
-	"github.com/KrizzMU/coolback-alkol/pkg/api/resp"
 	"net/http"
 	"strconv"
+
+	"github.com/KrizzMU/coolback-alkol/pkg/api/resp"
 
 	"github.com/gin-gonic/gin"
 )
@@ -12,7 +13,6 @@ import (
 // @Summary Получить список контактов пользователя
 // @Description Получить список контактов пользователя
 // @Tags Contact
-// @Param user-id query int true "ID пользователя"
 // @Accept json
 // @Produce json
 // @Router /contact/all [get]
@@ -66,7 +66,6 @@ func (h *Handler) GetContactById(c *gin.Context) {
 // @Summary Создать контакт
 // @Description Создать контакт
 // @Tags Contact
-// @Param user-id query int true "ID пользователя"
 // @Accept json
 // @Produce json
 // @Router /contact [post]
@@ -99,7 +98,6 @@ func (h *Handler) AddContact(c *gin.Context) {
 // @Summary Удалить контакт
 // @Description Удалить контакт
 // @Tags Contact
-// @Param user-id query int true "ID пользователя"
 // @Param id path int true "ID контакта"
 // @Accept json
 // @Produce json

@@ -13,7 +13,6 @@ import (
 // @Description Установить websocket соединение с мессенджером
 // @Tags Messenger
 // @Param chat-id query int true "ID чата подключения"
-// @Param user-id query int true "ID пользователя"
 // @Accept json
 // @Produce json
 // @Router /messenger/connect [get]

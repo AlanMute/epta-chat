@@ -40,7 +40,6 @@ func (h *Handler) GetChats(c *gin.Context) {
 // @Summary Получить чат по ID
 // @Description Получить чат по ID
 // @Tags Chat
-// @Param user-id query int true "ID пользователя"
 // @Param id path int true "ID чата"
 // @Accept json
 // @Produce json

@@ -30,19 +30,55 @@ const docTemplate = `{
                 "summary": "Создать чат",
                 "parameters": [
                     {
-                        "type": "integer",
-                        "description": "ID пользователя",
-                        "name": "user-id",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
                         "description": "Данные для создания чата",
                         "name": "body",
                         "in": "body",
                         "required": true,
                         "schema": {
                             "$ref": "#/definitions/handler.AddChat"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Чат создан"
+                    },
+                    "400": {
+                        "description": "Запрос не правильно составлен",
+                        "schema": {
+                            "$ref": "#/definitions/resp.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Возникла внутренняя ошибка",
+                        "schema": {
+                            "$ref": "#/definitions/resp.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/chat/add/members": {
+            "post": {
+                "description": "Создать чат",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Chat"
+                ],
+                "summary": "Создать чат",
+                "parameters": [
+                    {
+                        "description": "Список users_id",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handler.AddMember"
                         }
                     }
                 ],
@@ -128,13 +164,6 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "ID пользователя",
-                        "name": "user-id",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
                         "description": "ID чата",
                         "name": "id",
                         "in": "path",
@@ -182,13 +211,6 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "ID пользователя",
-                        "name": "user-id",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
                         "description": "ID чата",
                         "name": "id",
                         "in": "path",
@@ -231,13 +253,6 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "ID пользователя",
-                        "name": "user-id",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
                         "description": "ID чата",
                         "name": "id",
                         "in": "path",
@@ -276,15 +291,6 @@ const docTemplate = `{
                     "Contact"
                 ],
                 "summary": "Создать контакт",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID пользователя",
-                        "name": "user-id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
                 "responses": {
                     "201": {
                         "description": "Контакт создан"
@@ -316,13 +322,6 @@ const docTemplate = `{
                 ],
                 "summary": "Удалить контакт",
                 "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID пользователя",
-                        "name": "user-id",
-                        "in": "query",
-                        "required": true
-                    },
                     {
                         "type": "integer",
                         "description": "ID контакта",
@@ -363,15 +362,6 @@ const docTemplate = `{
                     "Contact"
                 ],
                 "summary": "Получить список контактов пользователя",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID пользователя",
-                        "name": "user-id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -461,13 +451,6 @@ const docTemplate = `{
                         "name": "chat-id",
                         "in": "query",
                         "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "ID пользователя",
-                        "name": "user-id",
-                        "in": "query",
-                        "required": true
                     }
                 ],
                 "responses": {
@@ -486,7 +469,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/user/refresh": {
+        "/user/refresh/{id}": {
             "post": {
                 "description": "Обновить токены",
                 "consumes": [
@@ -678,17 +661,31 @@ const docTemplate = `{
         "handler.AddChat": {
             "type": "object",
             "properties": {
-                "course_id": {
+                "is_direct": {
+                    "type": "boolean"
+                },
+                "members_ids": {
                     "type": "array",
                     "items": {
                         "type": "integer"
                     }
                 },
-                "is_direct": {
-                    "type": "boolean"
-                },
                 "name": {
                     "type": "string"
+                }
+            }
+        },
+        "handler.AddMember": {
+            "type": "object",
+            "properties": {
+                "chat_id": {
+                    "type": "integer"
+                },
+                "members_ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
                 }
             }
         },
@@ -724,11 +721,11 @@ const docTemplate = `{
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "0.1",
+	Version:          "",
 	Host:             "",
-	BasePath:         "/api/v1",
+	BasePath:         "",
 	Schemes:          []string{},
-	Title:            "Messenger API",
+	Title:            "",
 	Description:      "",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
