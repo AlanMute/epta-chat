@@ -1,9 +1,10 @@
 package handler
 
 import (
+	"net/http"
+
 	"github.com/KrizzMU/coolback-alkol/internal/core/messenger/domain/model"
 	"github.com/gorilla/websocket"
-	"net/http"
 
 	"github.com/KrizzMU/coolback-alkol/internal/service"
 	"github.com/KrizzMU/coolback-alkol/pkg/auth"
@@ -51,7 +52,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 
 	v1 := r.Group("api/v1")
 
-	chat := v1.Group("/chat") //TODO: make middleware
+	chat := v1.Group("/chat", h.isLogedIn)
 	{
 		chat.Handle(http.MethodGet, "/all", h.GetChats)
 		chat.Handle(http.MethodGet, "/:id", h.GetChatById)
@@ -60,7 +61,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		chat.Handle(http.MethodDelete, "/:id", h.DeleteChat)
 	}
 
-	contact := v1.Group("/contact")
+	contact := v1.Group("/contact", h.isLogedIn)
 	{
 		contact.Handle(http.MethodGet, "/all", h.GetContacts)
 		contact.Handle(http.MethodGet, "/:id", h.GetContactById)
@@ -75,7 +76,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		user.Handle(http.MethodPost, "/refresh", h.Refresh)
 	}
 
-	messenger := v1.Group("/messenger")
+	messenger := v1.Group("/messenger", h.isLogedIn)
 	{
 		messenger.Handle(http.MethodGet, "/connect", h.Connect)
 	}
