@@ -9,7 +9,7 @@ type ContactService struct {
 	repo repository.Contact
 }
 
-func NewContactSevice(repo repository.Contact) *ContactService {
+func NewContactService(repo repository.Contact) *ContactService {
 	return &ContactService{repo: repo}
 }
 
