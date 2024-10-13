@@ -17,6 +17,11 @@ const docTemplate = `{
     "paths": {
         "/chat": {
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Создать чат",
                 "consumes": [
                     "application/json"
@@ -29,6 +34,13 @@ const docTemplate = `{
                 ],
                 "summary": "Создать чат",
                 "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID пользователя",
+                        "name": "user-id",
+                        "in": "query",
+                        "required": true
+                    },
                     {
                         "description": "Данные для создания чата",
                         "name": "body",
@@ -60,7 +72,12 @@ const docTemplate = `{
         },
         "/chat/add/members": {
             "post": {
-                "description": "Создать чат",
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Добавить участника",
                 "consumes": [
                     "application/json"
                 ],
@@ -70,8 +87,15 @@ const docTemplate = `{
                 "tags": [
                     "Chat"
                 ],
-                "summary": "Создать чат",
+                "summary": "Добавить участника",
                 "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID пользователя",
+                        "name": "user-id",
+                        "in": "query",
+                        "required": true
+                    },
                     {
                         "description": "Список users_id",
                         "name": "body",
@@ -103,6 +127,11 @@ const docTemplate = `{
         },
         "/chat/all": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Получить список чатов пользователя",
                 "consumes": [
                     "application/json"
@@ -150,6 +179,11 @@ const docTemplate = `{
         },
         "/chat/members/{id}": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Получить список участников чата",
                 "consumes": [
                     "application/json"
@@ -197,6 +231,11 @@ const docTemplate = `{
         },
         "/chat/{id}": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Получить чат по ID",
                 "consumes": [
                     "application/json"
@@ -239,6 +278,11 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Удалить чат",
                 "consumes": [
                     "application/json"
@@ -280,6 +324,11 @@ const docTemplate = `{
         },
         "/contact": {
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Создать контакт",
                 "consumes": [
                     "application/json"
@@ -310,6 +359,11 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Удалить контакт",
                 "consumes": [
                     "application/json"
@@ -351,6 +405,11 @@ const docTemplate = `{
         },
         "/contact/all": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Получить список контактов пользователя",
                 "consumes": [
                     "application/json"
@@ -389,6 +448,11 @@ const docTemplate = `{
         },
         "/contact/{id}": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Получить контакт по ID",
                 "consumes": [
                     "application/json"
@@ -433,6 +497,11 @@ const docTemplate = `{
         },
         "/messenger/connect": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Установить websocket соединение с мессенджером",
                 "consumes": [
                     "application/json"
@@ -716,16 +785,24 @@ const docTemplate = `{
                 }
             }
         }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "description": "\"Укажите 'Bearer', а затем ваш JWT токен.\"",
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
     }
 }`
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "",
+	Version:          "0.1",
 	Host:             "",
-	BasePath:         "",
+	BasePath:         "/api/v1",
 	Schemes:          []string{},
-	Title:            "",
+	Title:            "Messenger API",
 	Description:      "",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,

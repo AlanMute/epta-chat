@@ -1,9 +1,9 @@
 package handler
 
 import (
+	messenger_service "github.com/KrizzMU/coolback-alkol/internal/core/messenger/domain/service"
 	"net/http"
 
-	"github.com/KrizzMU/coolback-alkol/internal/core/messenger/domain/model"
 	"github.com/gorilla/websocket"
 
 	"github.com/KrizzMU/coolback-alkol/internal/service"
@@ -15,26 +15,30 @@ import (
 	_ "github.com/KrizzMU/coolback-alkol/docs"
 )
 
+// Handler
 // @title Messenger API
 // @version 0.1
 // @BasePath /api/v1
-
+// @securityDefinitions.apikey  BearerAuth
+// @in              header
+// @name            Authorization
+// @description     "Укажите 'Bearer', а затем ваш JWT токен."
 type Handler struct {
-	tokenManger auth.TokenManager
-	services    *service.Service
-	upgrader    *websocket.Upgrader
-	messenger   *model.Messenger
+	tokenManger      auth.TokenManager
+	services         *service.Service
+	upgrader         *websocket.Upgrader
+	messengerService *messenger_service.Messenger
 }
 
 func New(
 	tokenManager auth.TokenManager,
 	services *service.Service,
-	messenger *model.Messenger,
+	messengerService *messenger_service.Messenger,
 ) *Handler {
 	return &Handler{
-		tokenManger: tokenManager,
-		services:    services,
-		messenger:   messenger,
+		tokenManger:      tokenManager,
+		services:         services,
+		messengerService: messengerService,
 		upgrader: &websocket.Upgrader{
 			ReadBufferSize:  1024,
 			WriteBufferSize: 1024,

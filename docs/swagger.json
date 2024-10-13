@@ -1,11 +1,19 @@
 {
     "swagger": "2.0",
     "info": {
-        "contact": {}
+        "title": "Messenger API",
+        "contact": {},
+        "version": "0.1"
     },
+    "basePath": "/api/v1",
     "paths": {
         "/chat": {
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Создать чат",
                 "consumes": [
                     "application/json"
@@ -18,6 +26,13 @@
                 ],
                 "summary": "Создать чат",
                 "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID пользователя",
+                        "name": "user-id",
+                        "in": "query",
+                        "required": true
+                    },
                     {
                         "description": "Данные для создания чата",
                         "name": "body",
@@ -49,7 +64,12 @@
         },
         "/chat/add/members": {
             "post": {
-                "description": "Создать чат",
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Добавить участника",
                 "consumes": [
                     "application/json"
                 ],
@@ -59,8 +79,15 @@
                 "tags": [
                     "Chat"
                 ],
-                "summary": "Создать чат",
+                "summary": "Добавить участника",
                 "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID пользователя",
+                        "name": "user-id",
+                        "in": "query",
+                        "required": true
+                    },
                     {
                         "description": "Список users_id",
                         "name": "body",
@@ -92,6 +119,11 @@
         },
         "/chat/all": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Получить список чатов пользователя",
                 "consumes": [
                     "application/json"
@@ -139,6 +171,11 @@
         },
         "/chat/members/{id}": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Получить список участников чата",
                 "consumes": [
                     "application/json"
@@ -186,6 +223,11 @@
         },
         "/chat/{id}": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Получить чат по ID",
                 "consumes": [
                     "application/json"
@@ -228,6 +270,11 @@
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Удалить чат",
                 "consumes": [
                     "application/json"
@@ -269,6 +316,11 @@
         },
         "/contact": {
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Создать контакт",
                 "consumes": [
                     "application/json"
@@ -299,6 +351,11 @@
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Удалить контакт",
                 "consumes": [
                     "application/json"
@@ -340,6 +397,11 @@
         },
         "/contact/all": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Получить список контактов пользователя",
                 "consumes": [
                     "application/json"
@@ -378,6 +440,11 @@
         },
         "/contact/{id}": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Получить контакт по ID",
                 "consumes": [
                     "application/json"
@@ -422,6 +489,11 @@
         },
         "/messenger/connect": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Установить websocket соединение с мессенджером",
                 "consumes": [
                     "application/json"
@@ -704,6 +776,14 @@
                     "type": "string"
                 }
             }
+        }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "description": "\"Укажите 'Bearer', а затем ваш JWT токен.\"",
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }

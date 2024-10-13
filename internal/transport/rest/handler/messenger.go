@@ -11,6 +11,7 @@ import (
 // Connect godoc
 // @Summary Подключиться к мессенджеру
 // @Description Установить websocket соединение с мессенджером
+// @Security BearerAuth
 // @Tags Messenger
 // @Param chat-id query int true "ID чата подключения"
 // @Accept json
@@ -25,9 +26,9 @@ func (h *Handler) Connect(c *gin.Context) {
 		return
 	}
 
-	chatID, err := strconv.Atoi(chatIDStr)
+	chatID, err := strconv.ParseUint(chatIDStr, 10, 64)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, resp.Error("Chat ID should be int"))
+		c.JSON(http.StatusBadRequest, resp.Error("Chat ID should be uint64"))
 		return
 	}
 
@@ -37,9 +38,9 @@ func (h *Handler) Connect(c *gin.Context) {
 		return
 	}
 
-	userID, err := strconv.Atoi(userIDStr)
+	userID, err := strconv.ParseUint(userIDStr, 10, 64)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, resp.Error("User ID should be int"))
+		c.JSON(http.StatusBadRequest, resp.Error("User ID should be uint64"))
 		return
 	}
 
@@ -49,7 +50,8 @@ func (h *Handler) Connect(c *gin.Context) {
 		return
 	}
 
-	err = h.messenger.Connect(conn, chatID, userID)
+	err = h.messengerService.JoinChat(conn, userID, chatID)
+
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, resp.Error("Unable to connect to websocket"))
 		return

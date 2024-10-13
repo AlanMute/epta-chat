@@ -12,6 +12,7 @@ import (
 // GetContacts godoc
 // @Summary Получить список контактов пользователя
 // @Description Получить список контактов пользователя
+// @Security BearerAuth
 // @Tags Contact
 // @Accept json
 // @Produce json
@@ -38,6 +39,7 @@ func (h *Handler) GetContacts(c *gin.Context) {
 // GetContactById godoc
 // @Summary Получить контакт по ID
 // @Description Получить контакт по ID
+// @Security BearerAuth
 // @Tags Contact
 // @Param id path int true "ID контакта"
 // @Accept json
@@ -65,6 +67,7 @@ func (h *Handler) GetContactById(c *gin.Context) {
 // AddContact godoc
 // @Summary Создать контакт
 // @Description Создать контакт
+// @Security BearerAuth
 // @Tags Contact
 // @Accept json
 // @Produce json
@@ -97,6 +100,7 @@ func (h *Handler) AddContact(c *gin.Context) {
 // DeleteContact godoc
 // @Summary Удалить контакт
 // @Description Удалить контакт
+// @Security BearerAuth
 // @Tags Contact
 // @Param id path int true "ID контакта"
 // @Accept json

@@ -1,7 +1,7 @@
 package model
 
 type Chat struct {
-	ID        int
+	ID        ID
 	clients   map[*Client]bool
 	broadcast chan MessageSent
 }

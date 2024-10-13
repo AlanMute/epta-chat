@@ -5,18 +5,20 @@ import (
 	"github.com/gorilla/websocket"
 )
 
+type ID uint64
+
 type Messenger struct {
-	chats map[int]*Chat
+	chats map[ID]*Chat
 }
 
 func NewMessenger() *Messenger {
 	m := &Messenger{
-		chats: make(map[int]*Chat),
+		chats: make(map[ID]*Chat),
 	}
 	return m
 }
 
-func (m *Messenger) CreateChat(id int) {
+func (m *Messenger) CreateChat(id ID) {
 	chat := &Chat{
 		ID:        id,
 		clients:   make(map[*Client]bool),
@@ -26,7 +28,7 @@ func (m *Messenger) CreateChat(id int) {
 	chat.Run()
 }
 
-func (m *Messenger) Connect(conn *websocket.Conn, chatID int, userID int) error {
+func (m *Messenger) Connect(conn *websocket.Conn, chatID ID, userID ID) error {
 	client := newClient(conn, userID)
 
 	chat, ok := m.chats[chatID]

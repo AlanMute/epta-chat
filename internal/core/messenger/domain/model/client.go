@@ -8,7 +8,7 @@ import (
 )
 
 type Client struct {
-	userID         int
+	userID         ID
 	conn           *websocket.Conn
 	wg             *sync.WaitGroup
 	send           chan MessageSent
@@ -91,7 +91,7 @@ func (c *Client) Run(messageQueue chan<- MessageSent) {
 	c.wg.Wait()
 }
 
-func newClient(conn *websocket.Conn, userID int) *Client {
+func newClient(conn *websocket.Conn, userID ID) *Client {
 	return &Client{
 		userID:         userID,
 		conn:           conn,

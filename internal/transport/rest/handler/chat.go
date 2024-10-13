@@ -12,6 +12,7 @@ import (
 // GetChats godoc
 // @Summary Получить список чатов пользователя
 // @Description Получить список чатов пользователя
+// @Security BearerAuth
 // @Tags Chat
 // @Param user-id query int true "ID пользователя"
 // @Accept json
@@ -39,6 +40,7 @@ func (h *Handler) GetChats(c *gin.Context) {
 // GetChatById godoc
 // @Summary Получить чат по ID
 // @Description Получить чат по ID
+// @Security BearerAuth
 // @Tags Chat
 // @Param id path int true "ID чата"
 // @Accept json
@@ -72,6 +74,7 @@ func (h *Handler) GetChatById(c *gin.Context) {
 // GetChatMembers godoc
 // @Summary Получить список участников чата
 // @Description Получить список участников чата
+// @Security BearerAuth
 // @Tags Chat
 // @Param id path int true "ID чата"
 // @Accept json
@@ -105,7 +108,9 @@ func (h *Handler) GetChatMembers(c *gin.Context) {
 // AddChat godoc
 // @Summary Создать чат
 // @Description Создать чат
+// @Security BearerAuth
 // @Tags Chat
+// @Param user-id query int true "ID пользователя"
 // @Param body body AddChat true "Данные для создания чата"
 // @Accept json
 // @Produce json
@@ -132,15 +137,17 @@ func (h *Handler) AddChat(c *gin.Context) {
 		return
 	}
 
-	h.messenger.CreateChat(int(id))
+	h.messengerService.CreateChat(id)
 
 	c.Status(http.StatusCreated)
 }
 
-// AddChat godoc
-// @Summary Создать чат
-// @Description Создать чат
+// AddMember godoc
+// @Summary Добавить участника
+// @Description Добавить участника
+// @Security BearerAuth
 // @Tags Chat
+// @Param user-id query int true "ID пользователя"
 // @Param body body AddMember true "Список users_id"
 // @Accept json
 // @Produce json
@@ -173,6 +180,7 @@ func (h *Handler) AddMember(c *gin.Context) {
 // DeleteChat godoc
 // @Summary Удалить чат
 // @Description Удалить чат
+// @Security BearerAuth
 // @Tags Chat
 // @Param id path int true "ID чата"
 // @Accept json
