@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	messenger_service "github.com/KrizzMU/coolback-alkol/internal/core/messenger/domain/service"
 	"os"
 	"os/signal"
 	"syscall"
@@ -36,12 +37,13 @@ func main() {
 
 	messenger := model.NewMessenger()
 
-	// Create test chats
-	// messenger.CreateChat(0)
-	// messenger.CreateChat(1)
+	messengerService := messenger_service.NewMessenger(
+		repositories.Chat,
+		messenger,
+	)
 
 	// Setup REST server
-	h := handler.New(tokenManager, services, messenger)
+	h := handler.New(tokenManager, services, messengerService)
 	s := rest.New(cfg.Server, h.InitRoutes())
 
 	// Graceful shutdown

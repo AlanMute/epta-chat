@@ -5,6 +5,6 @@ type MessageReceived struct {
 }
 
 type MessageSent struct {
-	AuthorID int    `json:"author_id"`
+	AuthorID ID     `json:"author_id"`
 	Text     string `json:"text"`
 }

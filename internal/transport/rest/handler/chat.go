@@ -137,7 +137,7 @@ func (h *Handler) AddChat(c *gin.Context) {
 		return
 	}
 
-	h.messenger.CreateChat(int(id))
+	h.messengerService.CreateChat(id)
 
 	c.Status(http.StatusCreated)
 }
