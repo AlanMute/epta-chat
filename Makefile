@@ -5,8 +5,8 @@ BUILD_DIR = dist
 CONFIG_PATH = config.yaml
 
 serve:
-	go build -o ${BUILD_DIR}/main.exe ${MAIN_PKG}
-	${BUILD_DIR}/main.exe -config=${CONFIG_PATH}
+	go build -o dist/main.exe cmd/main.go
+	dist/main.exe -config=config.yaml
 
 build:
 	docker-compose up --build epta-app

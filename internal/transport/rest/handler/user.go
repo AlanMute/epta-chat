@@ -1,9 +1,10 @@
 package handler
 
 import (
-	"github.com/KrizzMU/coolback-alkol/pkg/api/resp"
 	"net/http"
 	"strconv"
+
+	"github.com/KrizzMU/coolback-alkol/pkg/api/resp"
 
 	"github.com/KrizzMU/coolback-alkol/internal/core"
 	"github.com/gin-gonic/gin"
@@ -31,7 +32,7 @@ func (h *Handler) SignUp(c *gin.Context) {
 		return
 	}
 
-	err = h.services.SignUp(info.Login, info.Password)
+	err = h.services.User.SignUp(info.Login, info.Password)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, resp.Error(err.Error()))
 		return
@@ -53,9 +54,10 @@ func (h *Handler) SignUp(c *gin.Context) {
 // @Failure 500 {object} resp.ErrorResponse "Возникла внутренняя ошибка"
 func (h *Handler) SignIn(c *gin.Context) {
 	var (
-		info  Sign
-		token core.Tokens
-		err   error
+		info   Sign
+		userId uint64
+		token  core.Tokens
+		err    error
 	)
 
 	if err = c.ShouldBindJSON(&info); err != nil {
@@ -63,13 +65,59 @@ func (h *Handler) SignIn(c *gin.Context) {
 		return
 	}
 
-	token, err = h.services.SignIn(info.Login, info.Password)
+	userId, token, err = h.services.User.SignIn(info.Login, info.Password)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, resp.Error(err.Error()))
 		return
 	}
 
-	c.JSON(http.StatusOK, token)
+	type resp struct {
+		UserId uint64
+		Token  core.Tokens
+	}
+
+	c.JSON(http.StatusOK, resp{
+		UserId: userId,
+		Token:  token,
+	})
+}
+
+// SignIn godoc
+// @Summary Войти
+// @Description Войти
+// @Tags User
+// @Accept json
+// @Produce json
+// @Param body body Sign true "Данные для регистрации"
+// @Router /user/sign-in [post]
+// @Success 200 "Вход выполнен"
+// @Failure 400 {object} resp.ErrorResponse "Запрос не правильно составлен"
+// @Failure 500 {object} resp.ErrorResponse "Возникла внутренняя ошибка"
+func (h *Handler) SetUsername(c *gin.Context) {
+	var (
+		info   UserName
+		userId int
+		err    error
+	)
+
+	userId, err = strconv.Atoi(c.Param("user-id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, resp.Error("Invalid user id"))
+		return
+	}
+
+	if err = c.ShouldBindJSON(&info); err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, resp.Error(err.Error()))
+		return
+	}
+
+	err = h.services.User.SetUserName(uint64(userId), info.Username)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, resp.Error(err.Error()))
+		return
+	}
+
+	c.Status(http.StatusOK)
 }
 
 // Refresh godoc
@@ -80,7 +128,7 @@ func (h *Handler) SignIn(c *gin.Context) {
 // @Produce json
 // @Param user-id query int true "ID пользователя"
 // @Param body body Refresh true "Данные для регистрации"
-// @Router /user/refresh [post]
+// @Router /user/refresh/{id} [post]
 // @Success 200 "Токены обновлены"
 // @Failure 400 {object} resp.ErrorResponse "Запрос не правильно составлен"
 // @Failure 500 {object} resp.ErrorResponse "Возникла внутренняя ошибка"
@@ -92,7 +140,7 @@ func (h *Handler) Refresh(c *gin.Context) {
 		err    error
 	)
 
-	userId, err = strconv.Atoi(c.Param("user-id")) //TODO: need will check token
+	userId, err = strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, resp.Error("Invalid user id"))
 		return
@@ -103,7 +151,7 @@ func (h *Handler) Refresh(c *gin.Context) {
 		return
 	}
 
-	token, err = h.services.Refresh(uint64(userId), info.Token)
+	token, err = h.services.User.Refresh(uint64(userId), info.Token)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, resp.Error(err.Error()))
 		return

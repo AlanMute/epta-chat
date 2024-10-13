@@ -1,9 +1,10 @@
 package handler
 
 import (
+	"net/http"
+
 	"github.com/KrizzMU/coolback-alkol/internal/core/messenger/domain/model"
 	"github.com/gorilla/websocket"
-	"net/http"
 
 	"github.com/KrizzMU/coolback-alkol/internal/service"
 	"github.com/KrizzMU/coolback-alkol/pkg/auth"
@@ -14,10 +15,14 @@ import (
 	_ "github.com/KrizzMU/coolback-alkol/docs"
 )
 
+// Handler
 // @title Messenger API
 // @version 0.1
 // @BasePath /api/v1
-
+// @securityDefinitions.apikey  BearerAuth
+// @in              header
+// @name            Authorization
+// @description     "Укажите 'Bearer', а затем ваш JWT токен."
 type Handler struct {
 	tokenManger auth.TokenManager
 	services    *service.Service
@@ -51,16 +56,17 @@ func (h *Handler) InitRoutes() *gin.Engine {
 
 	v1 := r.Group("api/v1")
 
-	chat := v1.Group("/chat") //TODO: make middleware
+	chat := v1.Group("/chat", h.isLogedIn)
 	{
 		chat.Handle(http.MethodGet, "/all", h.GetChats)
 		chat.Handle(http.MethodGet, "/:id", h.GetChatById)
 		chat.Handle(http.MethodGet, "/members/:id", h.GetChatMembers)
 		chat.Handle(http.MethodPost, "/", h.AddChat)
+		chat.Handle(http.MethodPost, "/add/members", h.AddMember)
 		chat.Handle(http.MethodDelete, "/:id", h.DeleteChat)
 	}
 
-	contact := v1.Group("/contact")
+	contact := v1.Group("/contact", h.isLogedIn)
 	{
 		contact.Handle(http.MethodGet, "/all", h.GetContacts)
 		contact.Handle(http.MethodGet, "/:id", h.GetContactById)
@@ -72,10 +78,11 @@ func (h *Handler) InitRoutes() *gin.Engine {
 	{
 		user.Handle(http.MethodPost, "/sign-in", h.SignIn)
 		user.Handle(http.MethodPost, "/sign-up", h.SignUp)
-		user.Handle(http.MethodPost, "/refresh", h.Refresh)
+		user.Handle(http.MethodPost, "/refresh/:id", h.Refresh)
+		user.Handle(http.MethodPost, "/set/username", h.isLogedIn, h.SetUsername)
 	}
 
-	messenger := v1.Group("/messenger")
+	messenger := v1.Group("/messenger", h.isLogedIn)
 	{
 		messenger.Handle(http.MethodGet, "/connect", h.Connect)
 	}

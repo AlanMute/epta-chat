@@ -3,19 +3,20 @@ package main
 import (
 	"context"
 	"fmt"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
+
 	"github.com/KrizzMU/coolback-alkol/internal/config"
 	"github.com/KrizzMU/coolback-alkol/internal/core/messenger/domain/model"
-	db2 "github.com/KrizzMU/coolback-alkol/internal/db"
+	"github.com/KrizzMU/coolback-alkol/internal/db"
 	"github.com/KrizzMU/coolback-alkol/internal/repository"
 	"github.com/KrizzMU/coolback-alkol/internal/service"
 	"github.com/KrizzMU/coolback-alkol/internal/transport/rest"
 	"github.com/KrizzMU/coolback-alkol/internal/transport/rest/handler"
 	"github.com/KrizzMU/coolback-alkol/pkg/auth"
 	"github.com/KrizzMU/coolback-alkol/pkg/logger/sl"
-	"os"
-	"os/signal"
-	"syscall"
-	"time"
 )
 
 func main() {
@@ -24,11 +25,7 @@ func main() {
 	log := sl.SetupLogger(cfg.Env, cfg.Logger)
 	log.With("config", cfg).Info("Application start!")
 
-	db := db2.GetConnection()
-
-	// DI
-
-	repositories := repository.New(db)
+	repositories := repository.New(db.GetConnection())
 
 	tokenManager, err := auth.NewManager("hello-world")
 	if err != nil {
@@ -40,8 +37,8 @@ func main() {
 	messenger := model.NewMessenger()
 
 	// Create test chats
-	messenger.CreateChat(0)
-	messenger.CreateChat(1)
+	// messenger.CreateChat(0)
+	// messenger.CreateChat(1)
 
 	// Setup REST server
 	h := handler.New(tokenManager, services, messenger)

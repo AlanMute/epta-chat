@@ -40,7 +40,7 @@ func (r *ChatRepo) Add(name string, isDirect bool, ownerId uint64, members []uin
 
 	for _, memberId := range members {
 		var existingMember core.ChatMembers
-		if err := r.db.Where("chat_id = ? AND member_id = ?", newChat.ID, memberId).First(&existingMember).Error; err == nil {
+		if err := tx.Where("chat_id = ? AND member_id = ?", newChat.ID, memberId).First(&existingMember).Error; err == nil {
 			continue
 		}
 
@@ -49,7 +49,7 @@ func (r *ChatRepo) Add(name string, isDirect bool, ownerId uint64, members []uin
 			ChatId:   newChat.ID,
 		}
 
-		if err := r.db.Create(&newMember).Error; err != nil {
+		if err := tx.Create(&newMember).Error; err != nil {
 			tx.Rollback()
 			return 0, err
 		}
@@ -60,6 +60,52 @@ func (r *ChatRepo) Add(name string, isDirect bool, ownerId uint64, members []uin
 	}
 
 	return newChat.ID, nil
+}
+
+func (r *ChatRepo) AddMember(ownerId, chatId uint64, members []uint64) error {
+	var chat core.Chat
+
+	if result := r.db.Where("id = ?", chatId).First(&chat); result.Error != nil {
+		return result.Error
+	}
+
+	if ownerId != chat.OwnerId {
+		return fmt.Errorf("not an owner of this chat")
+	}
+
+	if chat.IsDirect {
+		return fmt.Errorf("direct chat cannot has more than 2 members")
+	}
+
+	tx := r.db.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	for _, memberId := range members {
+		var existingMember core.ChatMembers
+		if err := tx.Where("chat_id = ? AND member_id = ?", chatId, memberId).First(&existingMember).Error; err == nil {
+			continue
+		}
+
+		newMember := core.ChatMembers{
+			MemberId: memberId,
+			ChatId:   chatId,
+		}
+
+		if err := tx.Create(&newMember).Error; err != nil {
+			tx.Rollback()
+			return err
+		}
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (r *ChatRepo) Delete(userId, chatId uint64) error {
@@ -96,34 +142,7 @@ func (r *ChatRepo) GetById(userId, chatId uint64) (core.Chat, error) {
 		return core.Chat{}, result.Error
 	}
 
-	if chat.IsDirect {
-		var otherMember core.ChatMembers
-
-		if result := r.db.Where("chat_id = ? AND member_id != ?", chatId, userId).First(&otherMember); result.Error != nil {
-			if gorm.IsRecordNotFoundError(result.Error) {
-				return core.Chat{}, fmt.Errorf("not a member of the chat")
-			}
-			return core.Chat{}, result.Error
-		}
-
-		var user core.User
-		if result := r.db.Where("id = ?", otherMember.MemberId).First(&user); result.Error != nil {
-			return core.Chat{}, result.Error
-		}
-
-		chat.Name = user.UserName
-	} else {
-		var member core.ChatMembers
-
-		if result := r.db.Where("chat_id = ? AND member_id = ?", chatId, userId).First(&member); result.Error != nil {
-			if gorm.IsRecordNotFoundError(result.Error) {
-				return core.Chat{}, fmt.Errorf("not a member of the chat")
-			}
-			return core.Chat{}, result.Error
-		}
-	}
-
-	return chat, nil
+	return r.setChatName(chat, userId)
 }
 
 func (r *ChatRepo) GetAll(userId uint64) ([]core.Chat, error) {
@@ -141,6 +160,14 @@ func (r *ChatRepo) GetAll(userId uint64) ([]core.Chat, error) {
 	var chats []core.Chat
 	if result := r.db.Where("id IN (?)", chatIDs).Find(&chats); result.Error != nil {
 		return nil, result.Error
+	}
+
+	var err error
+	for i, chat := range chats {
+		chats[i], err = r.setChatName(chat, userId)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	return chats, nil
@@ -180,4 +207,35 @@ func (r *ChatRepo) GetMembers(userId, chatId uint64) ([]core.UserInfo, error) {
 	}
 
 	return usersInfo, nil
+}
+
+func (r *ChatRepo) setChatName(chat core.Chat, userId uint64) (core.Chat, error) {
+	if chat.IsDirect {
+		var otherMember core.ChatMembers
+
+		if result := r.db.Where("chat_id = ? AND member_id != ?", chat.ID, userId).First(&otherMember); result.Error != nil {
+			if gorm.IsRecordNotFoundError(result.Error) {
+				return core.Chat{}, fmt.Errorf("not a member of the chat")
+			}
+			return core.Chat{}, result.Error
+		}
+
+		var user core.User
+		if result := r.db.Where("id = ?", otherMember.MemberId).First(&user); result.Error != nil {
+			return core.Chat{}, result.Error
+		}
+
+		chat.Name = user.UserName
+	} else {
+		var member core.ChatMembers
+
+		if result := r.db.Where("chat_id = ? AND member_id = ?", chat.ID, userId).First(&member); result.Error != nil {
+			if gorm.IsRecordNotFoundError(result.Error) {
+				return core.Chat{}, fmt.Errorf("not a member of the chat")
+			}
+			return core.Chat{}, result.Error
+		}
+	}
+
+	return chat, nil
 }

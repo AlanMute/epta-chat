@@ -1,12 +1,12 @@
 package config
 
 import (
-	"flag"
+	"log"
+	"os"
+
 	"github.com/KrizzMU/coolback-alkol/internal/transport/rest"
 	"github.com/KrizzMU/coolback-alkol/pkg/logger/sl"
 	"github.com/ilyakaznacheev/cleanenv"
-	"log"
-	"os"
 )
 
 type Config struct {
@@ -17,21 +17,15 @@ type Config struct {
 }
 
 func MustLoad() *Config {
-	configPath := flag.String("config", "", "path to config file")
+	configPath := "./config.yaml"
 
-	flag.Parse()
-
-	if *configPath == "" {
-		log.Fatalf("config command flag is not set")
-	}
-
-	if _, err := os.Stat(*configPath); err != nil {
+	if _, err := os.Stat(configPath); err != nil {
 		log.Fatalf("error opening config file: %s", err)
 	}
 
 	config := new(Config)
 
-	if err := cleanenv.ReadConfig(*configPath, config); err != nil {
+	if err := cleanenv.ReadConfig(configPath, config); err != nil {
 		log.Fatalf("error reading config file: %s", err)
 	}
 

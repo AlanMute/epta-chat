@@ -1,7 +1,5 @@
-.env
 ./db/sql
 .idea/
-docs
 dist
 logs
 *.log

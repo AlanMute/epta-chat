@@ -17,6 +17,10 @@ func (s *ChatService) Add(name string, isDirect bool, ownerId uint64, members []
 	return s.repo.Add(name, isDirect, ownerId, s.getUniqueMembers(members))
 }
 
+func (s *ChatService) AddMember(ownerId, chatId uint64, members []uint64) error {
+	return s.repo.AddMember(ownerId, chatId, members)
+}
+
 func (s *ChatService) Delete(userId, chatId uint64) error {
 	return s.repo.Delete(userId, chatId)
 }

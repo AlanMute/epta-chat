@@ -1,14 +1,17 @@
 version: '3.9'
 services:
-  service:
-    container_name: service
-    image: ffh255/epta-chat-service
+  epta-app:
+    container_name: eptagolang
+    build: ./
     ports:
       - '8080:8080'
-    depends_on:
-      - db
+    environment:
+      - DB_PASSWORD=${DB_PASSWORD}
     networks:
       - net
+    depends_on:
+      db:
+        condition: service_healthy
 
   db:
     restart: always
@@ -24,6 +27,11 @@ services:
       - pg-data:/var/lib/postgresql/data
     networks:
       - net
+    healthcheck:
+          test: ["CMD", "pg_isready", "-U", "${DB_USER}"]
+          interval: 5s
+          timeout: 3s
+          retries: 2
 
 networks:
   net:
