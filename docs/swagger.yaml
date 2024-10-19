@@ -57,6 +57,8 @@ definitions:
     properties:
       token:
         type: string
+      user_id:
+        type: integer
     type: object
   handler.Sign:
     properties:
@@ -81,11 +83,6 @@ paths:
       - application/json
       description: Создать чат
       parameters:
-      - description: ID пользователя
-        in: query
-        name: user-id
-        required: true
-        type: integer
       - description: Данные для создания чата
         in: body
         name: body
@@ -209,12 +206,6 @@ paths:
       consumes:
       - application/json
       description: Получить список чатов пользователя
-      parameters:
-      - description: ID пользователя
-        in: query
-        name: user-id
-        required: true
-        type: integer
       produces:
       - application/json
       responses:
@@ -271,6 +262,29 @@ paths:
       tags:
       - Chat
   /contact:
+    post:
+      consumes:
+      - application/json
+      description: Создать контакт
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Контакт создан
+        "400":
+          description: Запрос не правильно составлен
+          schema:
+            $ref: '#/definitions/resp.ErrorResponse'
+        "500":
+          description: Возникла внутренняя ошибка
+          schema:
+            $ref: '#/definitions/resp.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Создать контакт
+      tags:
+      - Contact
+  /contact/{id}:
     delete:
       consumes:
       - application/json
@@ -299,29 +313,6 @@ paths:
       summary: Удалить контакт
       tags:
       - Contact
-    post:
-      consumes:
-      - application/json
-      description: Создать контакт
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Контакт создан
-        "400":
-          description: Запрос не правильно составлен
-          schema:
-            $ref: '#/definitions/resp.ErrorResponse'
-        "500":
-          description: Возникла внутренняя ошибка
-          schema:
-            $ref: '#/definitions/resp.ErrorResponse'
-      security:
-      - BearerAuth: []
-      summary: Создать контакт
-      tags:
-      - Contact
-  /contact/{id}:
     get:
       consumes:
       - application/json
@@ -406,17 +397,12 @@ paths:
       summary: Подключиться к мессенджеру
       tags:
       - Messenger
-  /user/refresh/{id}:
+  /user/refresh:
     post:
       consumes:
       - application/json
       description: Обновить токены
       parameters:
-      - description: ID пользователя
-        in: query
-        name: user-id
-        required: true
-        type: integer
       - description: Данные для регистрации
         in: body
         name: body

@@ -35,13 +35,6 @@ const docTemplate = `{
                 "summary": "Создать чат",
                 "parameters": [
                     {
-                        "type": "integer",
-                        "description": "ID пользователя",
-                        "name": "user-id",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
                         "description": "Данные для создания чата",
                         "name": "body",
                         "in": "body",
@@ -143,15 +136,6 @@ const docTemplate = `{
                     "Chat"
                 ],
                 "summary": "Получить список чатов пользователя",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID пользователя",
-                        "name": "user-id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -357,50 +341,6 @@ const docTemplate = `{
                         }
                     }
                 }
-            },
-            "delete": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Удалить контакт",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Contact"
-                ],
-                "summary": "Удалить контакт",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID контакта",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Контакт удален"
-                    },
-                    "400": {
-                        "description": "Запрос не правильно составлен",
-                        "schema": {
-                            "$ref": "#/definitions/resp.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Возникла внутренняя ошибка",
-                        "schema": {
-                            "$ref": "#/definitions/resp.ErrorResponse"
-                        }
-                    }
-                }
             }
         },
         "/contact/all": {
@@ -493,6 +433,50 @@ const docTemplate = `{
                         }
                     }
                 }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Удалить контакт",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Contact"
+                ],
+                "summary": "Удалить контакт",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID контакта",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Контакт удален"
+                    },
+                    "400": {
+                        "description": "Запрос не правильно составлен",
+                        "schema": {
+                            "$ref": "#/definitions/resp.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Возникла внутренняя ошибка",
+                        "schema": {
+                            "$ref": "#/definitions/resp.ErrorResponse"
+                        }
+                    }
+                }
             }
         },
         "/messenger/connect": {
@@ -538,7 +522,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/user/refresh/{id}": {
+        "/user/refresh": {
             "post": {
                 "description": "Обновить токены",
                 "consumes": [
@@ -552,13 +536,6 @@ const docTemplate = `{
                 ],
                 "summary": "Обновить токены",
                 "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID пользователя",
-                        "name": "user-id",
-                        "in": "query",
-                        "required": true
-                    },
                     {
                         "description": "Данные для регистрации",
                         "name": "body",
@@ -763,6 +740,9 @@ const docTemplate = `{
             "properties": {
                 "token": {
                     "type": "string"
+                },
+                "user_id": {
+                    "type": "integer"
                 }
             }
         },
