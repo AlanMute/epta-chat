@@ -72,6 +72,7 @@ func (h *Handler) GetContactById(c *gin.Context) {
 // @Tags Contact
 // @Accept json
 // @Produce json
+// @Param body body AddContact true "Логин контакта"
 // @Router /contact [post]
 // @Success 201 "Контакт создан"
 // @Failure 400 {object} resp.ErrorResponse "Запрос не правильно составлен"

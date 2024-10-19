@@ -340,6 +340,17 @@ const docTemplate = `{
                     "Contact"
                 ],
                 "summary": "Создать контакт",
+                "parameters": [
+                    {
+                        "description": "Логин контакта",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handler.AddContact"
+                        }
+                    }
+                ],
                 "responses": {
                     "201": {
                         "description": "Контакт создан"
@@ -740,6 +751,14 @@ const docTemplate = `{
                     }
                 },
                 "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "handler.AddContact": {
+            "type": "object",
+            "properties": {
+                "contact_login": {
                     "type": "string"
                 }
             }
