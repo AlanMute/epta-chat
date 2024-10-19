@@ -126,32 +126,24 @@ func (h *Handler) SetUsername(c *gin.Context) {
 // @Tags User
 // @Accept json
 // @Produce json
-// @Param user-id query int true "ID пользователя"
 // @Param body body Refresh true "Данные для регистрации"
-// @Router /user/refresh/{id} [post]
+// @Router /user/refresh [post]
 // @Success 200 "Токены обновлены"
 // @Failure 400 {object} resp.ErrorResponse "Запрос не правильно составлен"
 // @Failure 500 {object} resp.ErrorResponse "Возникла внутренняя ошибка"
 func (h *Handler) Refresh(c *gin.Context) {
 	var (
-		userId int
-		info   Refresh
-		token  string
-		err    error
+		info  Refresh
+		token string
+		err   error
 	)
-
-	userId, err = strconv.Atoi(c.Param("id"))
-	if err != nil {
-		c.JSON(http.StatusBadRequest, resp.Error("Invalid user id"))
-		return
-	}
 
 	if err = c.ShouldBindJSON(&info); err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, resp.Error(err.Error()))
 		return
 	}
 
-	token, err = h.services.User.Refresh(uint64(userId), info.Token)
+	token, err = h.services.User.Refresh(info.UserId, info.Token)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, resp.Error(err.Error()))
 		return

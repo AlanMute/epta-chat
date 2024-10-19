@@ -105,7 +105,7 @@ func (h *Handler) AddContact(c *gin.Context) {
 // @Param id path int true "ID контакта"
 // @Accept json
 // @Produce json
-// @Router /contact [delete]
+// @Router /contact/{id} [delete]
 // @Success 200 "Контакт удален"
 // @Failure 400 {object} resp.ErrorResponse "Запрос не правильно составлен"
 // @Failure 500 {object} resp.ErrorResponse "Возникла внутренняя ошибка"
