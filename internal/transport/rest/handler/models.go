@@ -21,7 +21,8 @@ type Sign struct {
 }
 
 type Refresh struct {
-	Token string `json:"token"`
+	UserId uint64 `json:"user_id"`
+	Token  string `json:"token"`
 }
 
 type UserName struct {

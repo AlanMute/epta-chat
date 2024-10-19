@@ -14,7 +14,6 @@ import (
 // @Description Получить список чатов пользователя
 // @Security BearerAuth
 // @Tags Chat
-// @Param user-id query int true "ID пользователя"
 // @Accept json
 // @Produce json
 // @Router /chat/all [get]
@@ -110,7 +109,6 @@ func (h *Handler) GetChatMembers(c *gin.Context) {
 // @Description Создать чат
 // @Security BearerAuth
 // @Tags Chat
-// @Param user-id query int true "ID пользователя"
 // @Param body body AddChat true "Данные для создания чата"
 // @Accept json
 // @Produce json

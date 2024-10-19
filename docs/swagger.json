@@ -27,13 +27,6 @@
                 "summary": "Создать чат",
                 "parameters": [
                     {
-                        "type": "integer",
-                        "description": "ID пользователя",
-                        "name": "user-id",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
                         "description": "Данные для создания чата",
                         "name": "body",
                         "in": "body",
@@ -135,15 +128,6 @@
                     "Chat"
                 ],
                 "summary": "Получить список чатов пользователя",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID пользователя",
-                        "name": "user-id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -360,50 +344,6 @@
                         }
                     }
                 }
-            },
-            "delete": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Удалить контакт",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Contact"
-                ],
-                "summary": "Удалить контакт",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID контакта",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Контакт удален"
-                    },
-                    "400": {
-                        "description": "Запрос не правильно составлен",
-                        "schema": {
-                            "$ref": "#/definitions/resp.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Возникла внутренняя ошибка",
-                        "schema": {
-                            "$ref": "#/definitions/resp.ErrorResponse"
-                        }
-                    }
-                }
             }
         },
         "/contact/all": {
@@ -496,6 +436,50 @@
                         }
                     }
                 }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Удалить контакт",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Contact"
+                ],
+                "summary": "Удалить контакт",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID контакта",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Контакт удален"
+                    },
+                    "400": {
+                        "description": "Запрос не правильно составлен",
+                        "schema": {
+                            "$ref": "#/definitions/resp.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Возникла внутренняя ошибка",
+                        "schema": {
+                            "$ref": "#/definitions/resp.ErrorResponse"
+                        }
+                    }
+                }
             }
         },
         "/messenger/connect": {
@@ -541,7 +525,7 @@
                 }
             }
         },
-        "/user/refresh/{id}": {
+        "/user/refresh": {
             "post": {
                 "description": "Обновить токены",
                 "consumes": [
@@ -555,13 +539,6 @@
                 ],
                 "summary": "Обновить токены",
                 "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID пользователя",
-                        "name": "user-id",
-                        "in": "query",
-                        "required": true
-                    },
                     {
                         "description": "Данные для регистрации",
                         "name": "body",
@@ -774,6 +751,9 @@
             "properties": {
                 "token": {
                     "type": "string"
+                },
+                "user_id": {
+                    "type": "integer"
                 }
             }
         },
