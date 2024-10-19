@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/KrizzMU/coolback-alkol/pkg/api/resp"
+	"github.com/jinzhu/gorm"
 
 	"github.com/gin-gonic/gin"
 )
@@ -71,6 +72,7 @@ func (h *Handler) GetContactById(c *gin.Context) {
 // @Tags Contact
 // @Accept json
 // @Produce json
+// @Param body body AddContact true "Логин контакта"
 // @Router /contact [post]
 // @Success 201 "Контакт создан"
 // @Failure 400 {object} resp.ErrorResponse "Запрос не правильно составлен"
@@ -88,8 +90,12 @@ func (h *Handler) AddContact(c *gin.Context) {
 		return
 	}
 
-	err = h.services.Contact.Add(uint64(userId), info.ContactId)
+	err = h.services.Contact.Add(uint64(userId), info.ContactLogin)
 	if err != nil {
+		if gorm.IsRecordNotFoundError(err) {
+			c.AbortWithStatusJSON(http.StatusBadRequest, resp.Error("user not found"))
+			return
+		}
 		c.AbortWithStatusJSON(http.StatusInternalServerError, resp.Error(err.Error()))
 		return
 	}

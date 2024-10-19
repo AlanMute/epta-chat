@@ -15,10 +15,16 @@ func NewContactPostgres(db *gorm.DB) *ContactRepo {
 	}
 }
 
-func (r *ContactRepo) Add(ownerId, сontactId uint64) error {
+func (r *ContactRepo) Add(ownerId uint64, contactLogin string) error {
+	var user core.User
+
+	if err := r.db.Where("login = ?", contactLogin).First(&user).Error; err != nil {
+		return err
+	}
+
 	newContact := core.Contact{
 		OwnerId:   ownerId,
-		ContactId: сontactId,
+		ContactId: user.ID,
 	}
 
 	if result := r.db.Create(&newContact); result.Error != nil {

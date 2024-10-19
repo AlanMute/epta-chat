@@ -13,8 +13,8 @@ func NewContactService(repo repository.Contact) *ContactService {
 	return &ContactService{repo: repo}
 }
 
-func (s *ContactService) Add(ownerId, conactId uint64) error {
-	return s.repo.Add(ownerId, conactId)
+func (s *ContactService) Add(ownerId uint64, contactLogin string) error {
+	return s.repo.Add(ownerId, contactLogin)
 }
 
 func (s *ContactService) Delete(ownerId, conactId uint64) error {

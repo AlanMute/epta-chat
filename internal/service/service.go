@@ -7,7 +7,7 @@ import (
 )
 
 type Contact interface {
-	Add(ownerId, conactId uint64) error
+	Add(ownerId uint64, contactLogin string) error
 	Delete(ownerId, conactId uint64) error
 	GetAll(ownerId uint64) ([]core.UserInfo, error)
 	GetById(id uint64) (core.UserInfo, error)

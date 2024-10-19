@@ -44,6 +44,11 @@ definitions:
       name:
         type: string
     type: object
+  handler.AddContact:
+    properties:
+      contact_login:
+        type: string
+    type: object
   handler.AddMember:
     properties:
       chat_id:
@@ -266,6 +271,13 @@ paths:
       consumes:
       - application/json
       description: Создать контакт
+      parameters:
+      - description: Логин контакта
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/handler.AddContact'
       produces:
       - application/json
       responses:
