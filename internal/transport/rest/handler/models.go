@@ -12,7 +12,7 @@ type AddMember struct {
 }
 
 type AddContact struct {
-	ContactId uint64 `json:"contact_id"`
+	ContactLogin string `json:"contact_login"`
 }
 
 type Sign struct {
