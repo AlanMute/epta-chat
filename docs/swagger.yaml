@@ -386,7 +386,9 @@ paths:
     get:
       consumes:
       - application/json
-      description: Установить websocket соединение с мессенджером
+      description: 'Установить websocket соединение с чатом. Чтобы отправить сообщение
+        в чат нужно сформировать json в формате { text: string }, приходить сообщения
+        буду в формате { text: string, author_id: uint }'
       parameters:
       - description: ID чата подключения
         in: query

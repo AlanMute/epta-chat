@@ -10,7 +10,7 @@ import (
 
 // Connect godoc
 // @Summary Подключиться к мессенджеру
-// @Description Установить websocket соединение с мессенджером
+// @Description Установить websocket соединение с чатом. Чтобы отправить сообщение в чат нужно сформировать json в формате { text: string }, приходить сообщения буду в формате { text: string, author_id: uint }
 // @Security BearerAuth
 // @Tags Messenger
 // @Param chat-id query int true "ID чата подключения"
