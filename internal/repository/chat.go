@@ -36,8 +36,6 @@ func (r *ChatRepo) Add(name string, isDirect bool, ownerId uint64, members []uin
 		return 0, err
 	}
 
-	members = append(members, ownerId)
-
 	for _, memberId := range members {
 		var existingMember core.ChatMembers
 		if err := tx.Where("chat_id = ? AND member_id = ?", newChat.ID, memberId).First(&existingMember).Error; err == nil {

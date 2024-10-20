@@ -1,6 +1,8 @@
 package service
 
 import (
+	"fmt"
+
 	"github.com/KrizzMU/coolback-alkol/internal/core"
 	"github.com/KrizzMU/coolback-alkol/internal/repository"
 )
@@ -14,7 +16,13 @@ func NewChatService(repo repository.Chat) *ChatService {
 }
 
 func (s *ChatService) Add(name string, isDirect bool, ownerId uint64, members []uint64) (uint64, error) {
-	return s.repo.Add(name, isDirect, ownerId, s.getUniqueMembers(members))
+	members = s.getUniqueMembers(append(members, ownerId))
+
+	if isDirect && len(members) != 2 {
+		return 0, fmt.Errorf("wrong amount of members for direct chat")
+	}
+
+	return s.repo.Add(name, isDirect, ownerId, members)
 }
 
 func (s *ChatService) AddMember(ownerId, chatId uint64, members []uint64) error {
