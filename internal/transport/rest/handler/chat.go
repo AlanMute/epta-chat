@@ -208,3 +208,44 @@ func (h *Handler) DeleteChat(c *gin.Context) {
 
 	c.Status(http.StatusOK)
 }
+
+// GetChatMessages godoc
+// @Summary Получить историю сообщений
+// @Description История сообщений получается постранично по 100 сообщений
+// @Security BearerAuth
+// @Tags Chat
+// @Param chat-id query int true "ID чата"
+// @Param page-id query int true "номер страницы"
+// @Accept json
+// @Produce json
+// @Router /chat/{chat-id}/messages/{page-id} [get]
+// @Success 200 {object} []core.Message
+// @Failure 400 {object} resp.ErrorResponse "Запрос не правильно составлен"
+// @Failure 500 {object} resp.ErrorResponse "Возникла внутренняя ошибка"
+func (h *Handler) GetChatMessages(c *gin.Context) {
+	userId, err := strconv.Atoi(c.Param("user-id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, resp.Error("Invalid user id"))
+		return
+	}
+
+	chatId, err := strconv.Atoi(c.Query("chat-id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, resp.Error("Invalid chat id"))
+		return
+	}
+
+	pageId, err := strconv.Atoi(c.Query("page-id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, resp.Error("Invalid page id"))
+		return
+	}
+
+	messages, err := h.services.Message.GetBatch(uint64(userId), uint64(chatId), uint64(pageId))
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, resp.Error(err.Error()))
+		return
+	}
+
+	c.JSON(http.StatusOK, messages)
+}

@@ -1,8 +1,9 @@
 package handler
 
 import (
-	messenger_service "github.com/KrizzMU/coolback-alkol/internal/core/messenger/domain/service"
 	"net/http"
+
+	messenger_service "github.com/KrizzMU/coolback-alkol/internal/core/messenger/domain/service"
 
 	"github.com/gorilla/websocket"
 
@@ -64,6 +65,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		chat.Handle(http.MethodPost, "/", h.AddChat)
 		chat.Handle(http.MethodPost, "/add/members", h.AddMember)
 		chat.Handle(http.MethodDelete, "/:id", h.DeleteChat)
+		chat.Handle(http.MethodGet, "/messages", h.GetChatMessages)
 	}
 
 	contact := v1.Group("/contact", h.isLogedIn)

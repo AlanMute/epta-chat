@@ -7,7 +7,6 @@ import (
 	"github.com/KrizzMU/coolback-alkol/internal/core"
 	"github.com/KrizzMU/coolback-alkol/internal/repository"
 	"github.com/KrizzMU/coolback-alkol/pkg/auth"
-	"github.com/sirupsen/logrus"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -28,12 +27,6 @@ func (s *UserService) SignUp(login, password string) error {
 	if err != nil {
 		return err
 	}
-
-	logrus.Info(password)
-	logrus.Info(hashPsw)
-
-	tempHash, _ := s.hashPassword(password)
-	logrus.Info(tempHash)
 
 	return s.repo.SignUp(core.User{
 		Login:    login,
