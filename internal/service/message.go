@@ -21,10 +21,10 @@ func (s *MessageService) GetBatch(userId, chatId, pageNumber uint64) ([]core.Mes
 		return nil, err
 	}
 
-	var messagesInfo []core.MessageInfo
+	messagesInfo := make([]core.MessageInfo, len(messages))
 
-	for _, message := range messages {
-		messageInfo := core.MessageInfo{
+	for i, message := range messages {
+		messagesInfo[len(messages)-i-1] = core.MessageInfo{
 			ID:          message.ID,
 			Text:        message.Text,
 			SendingTime: message.SendingTime,
@@ -32,8 +32,6 @@ func (s *MessageService) GetBatch(userId, chatId, pageNumber uint64) ([]core.Mes
 			UserName:    message.Sender.UserName,
 			ChatId:      message.ChatId,
 		}
-
-		messagesInfo = append(messagesInfo, messageInfo)
 	}
 
 	return messagesInfo, nil
