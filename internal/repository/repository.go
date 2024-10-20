@@ -33,6 +33,7 @@ type User interface {
 
 type Message interface {
 	Send(text string, senderId, chatId uint64, sendingTime time.Time) error
+	GetBatch(userId, chatId, pageNumber uint64) ([]core.Message, error)
 }
 
 type Repository struct {

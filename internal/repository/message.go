@@ -7,6 +7,8 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+const batchSize = 100
+
 type MessageRepo struct {
 	db *gorm.DB
 }
@@ -30,4 +32,29 @@ func (r *MessageRepo) Send(text string, senderId, chatId uint64, sendingTime tim
 	}
 
 	return nil
+}
+
+func (r *MessageRepo) GetBatch(userId, chatId, pageNumber uint64) ([]core.Message, error) {
+	var chat core.Chat
+
+	if err := r.db.Where("id = ?", chatId).First(&chat).Error; err != nil {
+		return nil, err
+	}
+
+	var member core.ChatMembers
+
+	if err := r.db.Where("member_id = ? AND chat_id = ?", userId, chatId).First(&member).Error; err != nil {
+		return nil, err
+	}
+
+	var messages []core.Message
+
+	if err := r.db.Where("chat_id = ?", chatId).
+		Limit(batchSize).
+		Offset(batchSize * pageNumber).
+		Find(&messages).Error; err != nil {
+		return nil, err
+	}
+
+	return messages, nil
 }

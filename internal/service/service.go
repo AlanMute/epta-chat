@@ -29,10 +29,15 @@ type User interface {
 	SetUserName(userId uint64, userName string) error
 }
 
+type Messgae interface {
+	GetBatch(userId, chatId, pageNumber uint64) ([]core.Message, error)
+}
+
 type Service struct {
 	Contact
 	Chat
 	User
+	Messgae
 }
 
 func New(repo *repository.Repository, t auth.TokenManager) *Service {
@@ -40,5 +45,6 @@ func New(repo *repository.Repository, t auth.TokenManager) *Service {
 		Contact: NewContactService(repo.Contact),
 		Chat:    NewChatService(repo.Chat),
 		User:    NewUserService(repo.User, t),
+		Messgae: NewMessageService(repo.Message),
 	}
 }
