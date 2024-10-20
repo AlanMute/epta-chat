@@ -205,6 +205,65 @@
                 }
             }
         },
+        "/chat/messages": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "История сообщений получается постранично по 100 сообщений",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Chat"
+                ],
+                "summary": "Получить историю сообщений",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID чата",
+                        "name": "chat-id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "номер страницы",
+                        "name": "page-id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/core.MessageInfo"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Запрос не правильно составлен",
+                        "schema": {
+                            "$ref": "#/definitions/resp.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Возникла внутренняя ошибка",
+                        "schema": {
+                            "$ref": "#/definitions/resp.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/chat/{id}": {
             "get": {
                 "security": [
@@ -673,6 +732,29 @@
                 },
                 "ownerId": {
                     "type": "integer"
+                }
+            }
+        },
+        "core.MessageInfo": {
+            "type": "object",
+            "properties": {
+                "chatId": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "senderId": {
+                    "type": "integer"
+                },
+                "sendingTime": {
+                    "type": "string"
+                },
+                "text": {
+                    "type": "string"
+                },
+                "userName": {
+                    "type": "string"
                 }
             }
         },

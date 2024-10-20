@@ -13,6 +13,21 @@ definitions:
       ownerId:
         type: integer
     type: object
+  core.MessageInfo:
+    properties:
+      chatId:
+        type: integer
+      id:
+        type: integer
+      senderId:
+        type: integer
+      sendingTime:
+        type: string
+      text:
+        type: string
+      userName:
+        type: string
+    type: object
   core.User:
     properties:
       id:
@@ -264,6 +279,44 @@ paths:
       security:
       - BearerAuth: []
       summary: Получить список участников чата
+      tags:
+      - Chat
+  /chat/messages:
+    get:
+      consumes:
+      - application/json
+      description: История сообщений получается постранично по 100 сообщений
+      parameters:
+      - description: ID чата
+        in: query
+        name: chat-id
+        required: true
+        type: integer
+      - description: номер страницы
+        in: query
+        name: page-id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/core.MessageInfo'
+            type: array
+        "400":
+          description: Запрос не правильно составлен
+          schema:
+            $ref: '#/definitions/resp.ErrorResponse'
+        "500":
+          description: Возникла внутренняя ошибка
+          schema:
+            $ref: '#/definitions/resp.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Получить историю сообщений
       tags:
       - Chat
   /contact:

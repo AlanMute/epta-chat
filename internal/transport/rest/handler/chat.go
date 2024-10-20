@@ -218,7 +218,7 @@ func (h *Handler) DeleteChat(c *gin.Context) {
 // @Param page-id query int true "номер страницы"
 // @Accept json
 // @Produce json
-// @Router /chat/{chat-id}/messages/{page-id} [get]
+// @Router /chat/messages [get]
 // @Success 200 {object} []core.MessageInfo
 // @Failure 400 {object} resp.ErrorResponse "Запрос не правильно составлен"
 // @Failure 500 {object} resp.ErrorResponse "Возникла внутренняя ошибка"
