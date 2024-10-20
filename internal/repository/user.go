@@ -92,3 +92,13 @@ func (r *UserRepo) deleteExpiredTokens() {
 		time.Sleep(24 * time.Hour)
 	}
 }
+
+func (r *UserRepo) GetById(userId uint64) (core.User, error) {
+	var user core.User
+
+	if result := r.db.Where("id = ?", userId).First(&user); result.Error != nil {
+		return core.User{}, result.Error
+	}
+
+	return user, nil
+}

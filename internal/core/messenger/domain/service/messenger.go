@@ -10,17 +10,23 @@ import (
 )
 
 type Messenger struct {
-	chatRepo  repository.Chat
-	messenger *model.Messenger
+	chatRepo    repository.Chat
+	userRepo    repository.User
+	messageRepo repository.Message
+	messenger   *model.Messenger
 }
 
 func NewMessenger(
 	chatRepo repository.Chat,
+	userRepo repository.User,
+	messageRepo repository.Message,
 	messenger *model.Messenger,
 ) *Messenger {
 	return &Messenger{
-		chatRepo:  chatRepo,
-		messenger: messenger,
+		chatRepo:    chatRepo,
+		userRepo:    userRepo,
+		messenger:   messenger,
+		messageRepo: messageRepo,
 	}
 }
 
@@ -39,11 +45,17 @@ func (s *Messenger) JoinChat(conn *websocket.Conn, userID, chatID uint64) error 
 		return errors.New("user is not member of that chat")
 	}
 
-	err = s.messenger.Connect(conn, model.ID(chatID), model.ID(userID))
+	user, err := s.userRepo.GetById(userID)
+
+	if err != nil {
+		return err
+	}
+
+	err = s.messenger.Connect(conn, model.ID(chatID), model.ID(userID), user.UserName)
 
 	return err
 }
 
 func (s *Messenger) CreateChat(chatID uint64) {
-	s.messenger.CreateChat(model.ID(chatID))
+	s.messenger.CreateChat(model.ID(chatID), s.messageRepo)
 }

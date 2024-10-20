@@ -1,13 +1,24 @@
 package model
 
+import (
+	"github.com/KrizzMU/coolback-alkol/internal/repository"
+	"time"
+)
+
 type Chat struct {
-	ID        ID
-	clients   map[*Client]bool
-	broadcast chan MessageSent
+	ID          ID
+	clients     map[*Client]bool
+	broadcast   chan MessageSent
+	messageRepo repository.Message
 }
 
 func (c *Chat) startBroadcasting() {
 	for message := range c.broadcast {
+		message.ChatID = c.ID
+		message.SendingTime = time.Now().String()
+
+		_ = c.messageRepo.Send(message.Text, uint64(message.SenderID), uint64(c.ID), time.Now())
+
 		for client := range c.clients {
 			client.send <- message
 		}

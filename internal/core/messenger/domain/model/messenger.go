@@ -2,6 +2,7 @@ package model
 
 import (
 	"fmt"
+	"github.com/KrizzMU/coolback-alkol/internal/repository"
 	"github.com/gorilla/websocket"
 )
 
@@ -18,22 +19,24 @@ func NewMessenger() *Messenger {
 	return m
 }
 
-func (m *Messenger) CreateChat(id ID) {
+func (m *Messenger) CreateChat(id ID, messageRepo repository.Message) {
 	chat := &Chat{
-		ID:        id,
-		clients:   make(map[*Client]bool),
-		broadcast: make(chan MessageSent),
+		ID:          id,
+		clients:     make(map[*Client]bool),
+		broadcast:   make(chan MessageSent),
+		messageRepo: messageRepo,
 	}
 	m.chats[id] = chat
 	chat.Run()
 }
 
-func (m *Messenger) Connect(conn *websocket.Conn, chatID ID, userID ID) error {
-	client := newClient(conn, userID)
+func (m *Messenger) Connect(conn *websocket.Conn, chatID ID, userID ID, userName string) error {
+	client := newClient(conn, userID, userName)
 
 	chat, ok := m.chats[chatID]
 
 	if !ok {
+		client.Stop()
 		return fmt.Errorf("chat with id %d not found", chatID)
 	}
 

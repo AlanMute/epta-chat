@@ -5,6 +5,10 @@ type MessageReceived struct {
 }
 
 type MessageSent struct {
-	AuthorID ID     `json:"author_id"`
-	Text     string `json:"text"`
+	ID          ID     `json:"id"`
+	ChatID      ID     `json:"chatId"`
+	SenderID    ID     `json:"senderId"`
+	UserName    string `json:"userName"`
+	SendingTime string `json:"sendingTime"`
+	Text        string `json:"text"`
 }
