@@ -29,6 +29,7 @@ type User interface {
 	SetUserName(userId uint64, userName string) error
 	AddSession(session core.Session) error
 	CheckRefresh(token string) error
+	GetById(userId uint64) (core.User, error)
 }
 
 type Message interface {

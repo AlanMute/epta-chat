@@ -39,6 +39,8 @@ func main() {
 
 	messengerService := messenger_service.NewMessenger(
 		repositories.Chat,
+		repositories.User,
+		repositories.Message,
 		messenger,
 	)
 
