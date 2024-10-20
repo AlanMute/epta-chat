@@ -30,7 +30,7 @@ type User interface {
 }
 
 type Message interface {
-	GetBatch(userId, chatId, pageNumber uint64) ([]core.Message, error)
+	GetBatch(userId, chatId, pageNumber uint64) ([]core.MessageInfo, error)
 }
 
 type Service struct {
