@@ -83,13 +83,6 @@ const docTemplate = `{
                 "summary": "Добавить участника",
                 "parameters": [
                     {
-                        "type": "integer",
-                        "description": "ID пользователя",
-                        "name": "user-id",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
                         "description": "Список users_id",
                         "name": "body",
                         "in": "body",

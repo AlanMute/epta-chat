@@ -145,7 +145,6 @@ func (h *Handler) AddChat(c *gin.Context) {
 // @Description Добавить участника
 // @Security BearerAuth
 // @Tags Chat
-// @Param user-id query int true "ID пользователя"
 // @Param body body AddMember true "Список users_id"
 // @Accept json
 // @Produce json

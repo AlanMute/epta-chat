@@ -34,7 +34,11 @@ func (h *Handler) GetContacts(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, contacts)
+	if len(contacts) == 0 {
+		c.JSON(http.StatusOK, [0]uint32{})
+	} else {
+		c.JSON(http.StatusOK, contacts)
+	}
 }
 
 // GetContactById godoc

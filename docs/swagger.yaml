@@ -192,11 +192,6 @@ paths:
       - application/json
       description: Добавить участника
       parameters:
-      - description: ID пользователя
-        in: query
-        name: user-id
-        required: true
-        type: integer
       - description: Список users_id
         in: body
         name: body
