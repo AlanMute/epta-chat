@@ -49,10 +49,7 @@ func (r *MessageRepo) GetBatch(userId, chatId, pageNumber uint64) ([]core.Messag
 
 	var messages []core.Message
 
-	if err := r.db.Table("messages").
-		Select("messages.*, users.login, users.user_name").
-		Joins("JOIN users ON messages.sender_id = users.id").
-		Where("messages.chat_id = ?", chatId).
+	if err := r.db.Preload("Sender").Where("chat_id = ?", chatId).
 		Limit(batchSize).
 		Offset(batchSize * pageNumber).
 		Find(&messages).Error; err != nil {
