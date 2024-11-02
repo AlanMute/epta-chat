@@ -28,7 +28,7 @@ func (h *Handler) isLogedIn(c *gin.Context) {
 
 	id, err := h.tokenManger.Parse(parts[1])
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
+		c.AbortWithStatusJSON(http.StatusUnauthorized, err.Error())
 		return
 	}
 

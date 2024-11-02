@@ -611,7 +611,58 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Токены обновлены"
+                        "description": "Токены обновлены",
+                        "schema": {
+                            "$ref": "#/definitions/handler.RefreshRes"
+                        }
+                    },
+                    "400": {
+                        "description": "Запрос не правильно составлен",
+                        "schema": {
+                            "$ref": "#/definitions/resp.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Возникла внутренняя ошибка",
+                        "schema": {
+                            "$ref": "#/definitions/resp.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/set-username": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Установить имя пользователя",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Установить имя пользователя",
+                "parameters": [
+                    {
+                        "description": "Данные для установки имя пользователя",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handler.UserName"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Имя пользователя установлено"
                     },
                     "400": {
                         "description": "Запрос не правильно составлен",
@@ -840,6 +891,14 @@ const docTemplate = `{
                 }
             }
         },
+        "handler.RefreshRes": {
+            "type": "object",
+            "properties": {
+                "refresh_token": {
+                    "type": "string"
+                }
+            }
+        },
         "handler.Sign": {
             "type": "object",
             "properties": {
@@ -847,6 +906,14 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "handler.UserName": {
+            "type": "object",
+            "properties": {
+                "username": {
                     "type": "string"
                 }
             }

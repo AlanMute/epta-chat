@@ -80,11 +80,21 @@ definitions:
       user_id:
         type: integer
     type: object
+  handler.RefreshRes:
+    properties:
+      refresh_token:
+        type: string
+    type: object
   handler.Sign:
     properties:
       login:
         type: string
       password:
+        type: string
+    type: object
+  handler.UserName:
+    properties:
+      username:
         type: string
     type: object
   resp.ErrorResponse:
@@ -477,6 +487,8 @@ paths:
       responses:
         "200":
           description: Токены обновлены
+          schema:
+            $ref: '#/definitions/handler.RefreshRes'
         "400":
           description: Запрос не правильно составлен
           schema:
@@ -486,6 +498,36 @@ paths:
           schema:
             $ref: '#/definitions/resp.ErrorResponse'
       summary: Обновить токены
+      tags:
+      - User
+  /user/set-username:
+    post:
+      consumes:
+      - application/json
+      description: Установить имя пользователя
+      parameters:
+      - description: Данные для установки имя пользователя
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/handler.UserName'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Имя пользователя установлено
+        "400":
+          description: Запрос не правильно составлен
+          schema:
+            $ref: '#/definitions/resp.ErrorResponse'
+        "500":
+          description: Возникла внутренняя ошибка
+          schema:
+            $ref: '#/definitions/resp.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Установить имя пользователя
       tags:
       - User
   /user/sign-in:

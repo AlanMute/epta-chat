@@ -28,3 +28,7 @@ type Refresh struct {
 type UserName struct {
 	Username string `json:"username"`
 }
+
+type RefreshRes struct {
+	RefreshToken string `json:"refresh_token"`
+}

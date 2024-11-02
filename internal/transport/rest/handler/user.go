@@ -82,15 +82,16 @@ func (h *Handler) SignIn(c *gin.Context) {
 	})
 }
 
-// SignIn godoc
-// @Summary Войти
-// @Description Войти
+// SetUsername godoc
+// @Summary Установить имя пользователя
+// @Description Установить имя пользователя
+// @Security BearerAuth
 // @Tags User
 // @Accept json
 // @Produce json
-// @Param body body Sign true "Данные для регистрации"
-// @Router /user/sign-in [post]
-// @Success 200 "Вход выполнен"
+// @Param body body UserName true "Данные для установки имя пользователя"
+// @Router /user/set-username [post]
+// @Success 200 "Имя пользователя установлено"
 // @Failure 400 {object} resp.ErrorResponse "Запрос не правильно составлен"
 // @Failure 500 {object} resp.ErrorResponse "Возникла внутренняя ошибка"
 func (h *Handler) SetUsername(c *gin.Context) {
@@ -128,7 +129,7 @@ func (h *Handler) SetUsername(c *gin.Context) {
 // @Produce json
 // @Param body body Refresh true "Данные для регистрации"
 // @Router /user/refresh [post]
-// @Success 200 "Токены обновлены"
+// @Success 200 {object} RefreshRes "Токены обновлены"
 // @Failure 400 {object} resp.ErrorResponse "Запрос не правильно составлен"
 // @Failure 500 {object} resp.ErrorResponse "Возникла внутренняя ошибка"
 func (h *Handler) Refresh(c *gin.Context) {
@@ -149,5 +150,7 @@ func (h *Handler) Refresh(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, token)
+	res := RefreshRes{RefreshToken: token}
+
+	c.JSON(http.StatusOK, res)
 }

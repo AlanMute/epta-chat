@@ -80,7 +80,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 	{
 		user.Handle(http.MethodPost, "/sign-in", h.SignIn)
 		user.Handle(http.MethodPost, "/sign-up", h.SignUp)
-		user.Handle(http.MethodPost, "/refresh/:id", h.Refresh)
+		user.Handle(http.MethodPost, "/refresh", h.Refresh)
 		user.Handle(http.MethodPost, "/set/username", h.isLogedIn, h.SetUsername)
 	}
 
