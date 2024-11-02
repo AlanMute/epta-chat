@@ -239,7 +239,7 @@ func (r *ChatRepo) setChatName(chat core.Chat, userId uint64) (core.Chat, error)
 
 func (r *ChatRepo) EnsureCommonChatExists() error {
 	var commonChat core.Chat
-	result := r.db.First(&commonChat, "id = ?", 0)
+	result := r.db.First(&commonChat, "id = ?", 1)
 
 	if result.Error == gorm.ErrRecordNotFound {
 		commonChat = core.Chat{
@@ -250,5 +250,5 @@ func (r *ChatRepo) EnsureCommonChatExists() error {
 			return err
 		}
 	}
-	return result.Error
+	return nil
 }

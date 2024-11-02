@@ -61,7 +61,7 @@ func (r *UserRepo) SignUp(user core.User) error {
 
 	chatMember := core.ChatMembers{
 		MemberId: user.ID,
-		ChatId:   0,
+		ChatId:   1,
 	}
 
 	return r.db.Create(&chatMember).Error
