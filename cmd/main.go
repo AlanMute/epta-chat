@@ -47,6 +47,7 @@ func main() {
 		repositories.Message,
 		messenger,
 	)
+	messengerService.CreateChat(0)
 
 	// Setup REST server
 	h := handler.New(tokenManager, services, messengerService)
