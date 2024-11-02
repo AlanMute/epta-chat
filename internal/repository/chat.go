@@ -2,7 +2,6 @@ package repository
 
 import (
 	"fmt"
-
 	"github.com/KrizzMU/coolback-alkol/internal/core"
 	"github.com/jinzhu/gorm"
 )
@@ -236,4 +235,20 @@ func (r *ChatRepo) setChatName(chat core.Chat, userId uint64) (core.Chat, error)
 	}
 
 	return chat, nil
+}
+
+func (r *ChatRepo) EnsureCommonChatExists() error {
+	var commonChat core.Chat
+	result := r.db.First(&commonChat, "id = ?", 0)
+
+	if result.Error == gorm.ErrRecordNotFound {
+		commonChat = core.Chat{
+			Name:     "Common chat",
+			IsDirect: false,
+		}
+		if err := r.db.Create(&commonChat).Error; err != nil {
+			return err
+		}
+	}
+	return result.Error
 }
