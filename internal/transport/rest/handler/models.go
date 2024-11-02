@@ -30,5 +30,5 @@ type UserName struct {
 }
 
 type RefreshRes struct {
-	RefreshToken string `json:"refresh_token"`
+	AccessToken string `json:"access_token"`
 }

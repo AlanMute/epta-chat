@@ -894,7 +894,7 @@ const docTemplate = `{
         "handler.RefreshRes": {
             "type": "object",
             "properties": {
-                "refresh_token": {
+                "access_token": {
                     "type": "string"
                 }
             }

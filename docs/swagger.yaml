@@ -82,7 +82,7 @@ definitions:
     type: object
   handler.RefreshRes:
     properties:
-      refresh_token:
+      access_token:
         type: string
     type: object
   handler.Sign:

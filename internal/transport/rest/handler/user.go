@@ -150,7 +150,7 @@ func (h *Handler) Refresh(c *gin.Context) {
 		return
 	}
 
-	res := RefreshRes{RefreshToken: token}
+	res := RefreshRes{AccessToken: token}
 
 	c.JSON(http.StatusOK, res)
 }
