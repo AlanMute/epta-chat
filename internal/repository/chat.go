@@ -262,8 +262,11 @@ func (r *ChatRepo) EnsureCommonChatExists() error {
 		if err := r.db.Create(&commonChat).Error; err != nil {
 			return err
 		}
+	} else {
+		return result.Error
 	}
-	return result.Error
+
+	return nil
 }
 
 func equalMembers(existingMembers, newMembers []uint64) bool {

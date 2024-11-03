@@ -23,6 +23,10 @@ func (r *ContactRepo) Add(ownerId uint64, contactLogin string) error {
 		return err
 	}
 
+	if user.ID == ownerId {
+		return nil
+	}
+
 	var existingContact core.Contact
 	if err := r.db.Where("owner_id = ? AND contact_id = ?", ownerId, user.ID).First(&existingContact).Error; err == nil {
 		return nil

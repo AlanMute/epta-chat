@@ -38,7 +38,10 @@
                 ],
                 "responses": {
                     "201": {
-                        "description": "Чат создан"
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ChatIdResponse"
+                        }
                     },
                     "400": {
                         "description": "Запрос не правильно составлен",
@@ -623,7 +626,7 @@
                 }
             }
         },
-        "/user/set-username": {
+        "/user/set/username": {
             "post": {
                 "security": [
                     {
@@ -869,6 +872,14 @@
                     "items": {
                         "type": "integer"
                     }
+                }
+            }
+        },
+        "handler.ChatIdResponse": {
+            "type": "object",
+            "properties": {
+                "chat_id": {
+                    "type": "integer"
                 }
             }
         },

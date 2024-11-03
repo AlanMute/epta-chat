@@ -73,6 +73,11 @@ definitions:
           type: integer
         type: array
     type: object
+  handler.ChatIdResponse:
+    properties:
+      chat_id:
+        type: integer
+    type: object
   handler.Refresh:
     properties:
       token:
@@ -123,7 +128,9 @@ paths:
       - application/json
       responses:
         "201":
-          description: Чат создан
+          description: Created
+          schema:
+            $ref: '#/definitions/handler.ChatIdResponse'
         "400":
           description: Запрос не правильно составлен
           schema:
@@ -500,7 +507,7 @@ paths:
       summary: Обновить токены
       tags:
       - User
-  /user/set-username:
+  /user/set/username:
     post:
       consumes:
       - application/json
