@@ -4,6 +4,8 @@ import (
 	"time"
 )
 
+const TimeFormat = time.RFC3339
+
 type GormModel struct {
 	ID uint64 `gorm:"primary_key" json:"id"`
 }

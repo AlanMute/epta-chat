@@ -27,7 +27,7 @@ func (s *MessageService) GetBatch(userId, chatId, pageNumber uint64) ([]core.Mes
 		messagesInfo[len(messages)-i-1] = core.MessageInfo{
 			ID:          message.ID,
 			Text:        message.Text,
-			SendingTime: message.SendingTime,
+			SendingTime: message.SendingTime.Format(core.TimeFormat),
 			SenderId:    message.SenderId,
 			UserName:    message.Sender.UserName,
 			ChatId:      message.ChatId,

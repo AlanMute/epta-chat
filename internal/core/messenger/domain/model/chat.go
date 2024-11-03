@@ -1,6 +1,7 @@
 package model
 
 import (
+	"github.com/KrizzMU/coolback-alkol/internal/core"
 	"github.com/KrizzMU/coolback-alkol/internal/repository"
 	"time"
 )
@@ -15,7 +16,7 @@ type Chat struct {
 func (c *Chat) startBroadcasting() {
 	for message := range c.broadcast {
 		message.ChatID = c.ID
-		message.SendingTime = time.Now().String()
+		message.SendingTime = time.Now().Format(core.TimeFormat)
 
 		_ = c.messageRepo.Send(message.Text, uint64(message.SenderID), uint64(c.ID), time.Now())
 
