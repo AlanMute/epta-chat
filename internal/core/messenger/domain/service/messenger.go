@@ -21,13 +21,23 @@ func NewMessenger(
 	userRepo repository.User,
 	messageRepo repository.Message,
 	messenger *model.Messenger,
-) *Messenger {
-	return &Messenger{
+) (*Messenger, error) {
+	m := &Messenger{
 		chatRepo:    chatRepo,
 		userRepo:    userRepo,
 		messenger:   messenger,
 		messageRepo: messageRepo,
 	}
+	chatsIds, err := chatRepo.FetchAllChatIDs()
+	if err != nil {
+		return m, err
+	}
+
+	for _, chatId := range chatsIds {
+		m.CreateChat(chatId)
+	}
+
+	return m, nil
 }
 
 func (s *Messenger) JoinChat(conn *websocket.Conn, userID, chatID uint64) error {

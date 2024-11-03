@@ -41,13 +41,15 @@ func main() {
 
 	messenger := model.NewMessenger()
 
-	messengerService := messenger_service.NewMessenger(
+	messengerService, err := messenger_service.NewMessenger(
 		repositories.Chat,
 		repositories.User,
 		repositories.Message,
 		messenger,
 	)
-	messengerService.CreateChat(1)
+	if err != nil {
+		logrus.Fatal("Failed to creat common chat: ", err)
+	}
 
 	// Setup REST server
 	h := handler.New(tokenManager, services, messengerService)

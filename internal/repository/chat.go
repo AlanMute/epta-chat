@@ -287,3 +287,18 @@ func equalMembers(existingMembers, newMembers []uint64) bool {
 
 	return true
 }
+
+func (r *ChatRepo) FetchAllChatIDs() ([]uint64, error) {
+	var chats []core.Chat
+
+	if result := r.db.Find(&chats); result.Error != nil {
+		return nil, result.Error
+	}
+
+	chatIDs := make([]uint64, len(chats))
+	for i, chat := range chats {
+		chatIDs[i] = chat.ID
+	}
+
+	return chatIDs, nil
+}

@@ -22,6 +22,7 @@ type Chat interface {
 	GetAll(userId uint64) ([]core.Chat, error)
 	GetMembers(userId, chatId uint64) ([]core.UserInfo, error)
 	EnsureCommonChatExists() error
+	FetchAllChatIDs() ([]uint64, error)
 }
 
 type User interface {
