@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	messenger_service "github.com/KrizzMU/coolback-alkol/internal/core/messenger/domain/service"
+	"github.com/sirupsen/logrus"
 	"os"
 	"os/signal"
 	"syscall"
@@ -27,6 +28,9 @@ func main() {
 	log.With("config", cfg).Info("Application start!")
 
 	repositories := repository.New(db.GetConnection())
+	if err := repositories.EnsureCommonChatExists(); err != nil {
+		logrus.Fatal("Failed to creat common chat: ", err)
+	}
 
 	tokenManager, err := auth.NewManager("hello-world")
 	if err != nil {
@@ -37,12 +41,15 @@ func main() {
 
 	messenger := model.NewMessenger()
 
-	messengerService := messenger_service.NewMessenger(
+	messengerService, err := messenger_service.NewMessenger(
 		repositories.Chat,
 		repositories.User,
 		repositories.Message,
 		messenger,
 	)
+	if err != nil {
+		logrus.Fatal("Failed to creat common chat: ", err)
+	}
 
 	// Setup REST server
 	h := handler.New(tokenManager, services, messengerService)

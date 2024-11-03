@@ -90,7 +90,7 @@ func (h *Handler) SignIn(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param body body UserName true "Данные для установки имя пользователя"
-// @Router /user/set-username [post]
+// @Router /user/set/username [post]
 // @Success 200 "Имя пользователя установлено"
 // @Failure 400 {object} resp.ErrorResponse "Запрос не правильно составлен"
 // @Failure 500 {object} resp.ErrorResponse "Возникла внутренняя ошибка"
@@ -103,7 +103,7 @@ func (h *Handler) SetUsername(c *gin.Context) {
 
 	userId, err = strconv.Atoi(c.Param("user-id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, resp.Error("Invalid user id"))
+		c.JSON(http.StatusUnauthorized, resp.Error("Invalid user id"))
 		return
 	}
 

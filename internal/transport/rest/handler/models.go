@@ -32,3 +32,7 @@ type UserName struct {
 type RefreshRes struct {
 	AccessToken string `json:"access_token"`
 }
+
+type ChatIdResponse struct {
+	ChatId uint64 `json:"chat_id"`
+}

@@ -30,6 +30,7 @@ func (s *UserService) SignUp(login, password string) error {
 
 	return s.repo.SignUp(core.User{
 		Login:    login,
+		UserName: login,
 		Password: hashPsw,
 	})
 }

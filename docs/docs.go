@@ -46,7 +46,10 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "201": {
-                        "description": "Чат создан"
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ChatIdResponse"
+                        }
                     },
                     "400": {
                         "description": "Запрос не правильно составлен",
@@ -631,7 +634,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/user/set-username": {
+        "/user/set/username": {
             "post": {
                 "security": [
                     {
@@ -877,6 +880,14 @@ const docTemplate = `{
                     "items": {
                         "type": "integer"
                     }
+                }
+            }
+        },
+        "handler.ChatIdResponse": {
+            "type": "object",
+            "properties": {
+                "chat_id": {
+                    "type": "integer"
                 }
             }
         },

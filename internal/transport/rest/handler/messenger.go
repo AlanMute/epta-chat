@@ -34,7 +34,7 @@ func (h *Handler) Connect(c *gin.Context) {
 
 	userIDStr := c.Param("user-id")
 	if userIDStr == "" {
-		c.JSON(http.StatusBadRequest, resp.Error("User ID is required"))
+		c.JSON(http.StatusUnauthorized, resp.Error("User ID is required"))
 		return
 	}
 
@@ -51,8 +51,8 @@ func (h *Handler) Connect(c *gin.Context) {
 	}
 
 	err = h.messengerService.JoinChat(conn, userID, chatID)
-
 	if err != nil {
+		_ = conn.Close()
 		c.JSON(http.StatusInternalServerError, resp.Error("Unable to connect to websocket"))
 		return
 	}

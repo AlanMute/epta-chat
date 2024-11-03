@@ -59,7 +59,12 @@ func (r *UserRepo) SignUp(user core.User) error {
 		return result.Error
 	}
 
-	return nil
+	chatMember := core.ChatMembers{
+		MemberId: user.ID,
+		ChatId:   1,
+	}
+
+	return r.db.Create(&chatMember).Error
 }
 
 func (r *UserRepo) AddSession(session core.Session) error {

@@ -1,7 +1,5 @@
 package core
 
-import "time"
-
 type Tokens struct {
 	AccessToken  string
 	RefreshToken string
@@ -16,7 +14,7 @@ type UserInfo struct {
 type MessageInfo struct {
 	ID          uint64
 	Text        string
-	SendingTime time.Time
+	SendingTime string
 	SenderId    uint64
 	UserName    string
 	ChatId      uint64
