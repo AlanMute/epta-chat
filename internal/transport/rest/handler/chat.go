@@ -113,7 +113,7 @@ func (h *Handler) GetChatMembers(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Router /chat [post]
-// @Success 201 "Чат создан"
+// @Success 201 {object} ChatIdResponse
 // @Failure 400 {object} resp.ErrorResponse "Запрос не правильно составлен"
 // @Failure 500 {object} resp.ErrorResponse "Возникла внутренняя ошибка"
 func (h *Handler) AddChat(c *gin.Context) {
@@ -137,7 +137,7 @@ func (h *Handler) AddChat(c *gin.Context) {
 
 	h.messengerService.CreateChat(id)
 
-	c.Status(http.StatusCreated)
+	c.JSON(http.StatusCreated, ChatIdResponse{id})
 }
 
 // AddMember godoc

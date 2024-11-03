@@ -24,7 +24,7 @@ import (
 func (h *Handler) GetContacts(c *gin.Context) {
 	userId, err := strconv.Atoi(c.Param("user-id")) //TODO: need will check token
 	if err != nil {
-		c.JSON(http.StatusBadRequest, resp.Error("Invalid user id"))
+		c.JSON(http.StatusUnauthorized, resp.Error("Invalid user id"))
 		return
 	}
 
@@ -84,7 +84,7 @@ func (h *Handler) GetContactById(c *gin.Context) {
 func (h *Handler) AddContact(c *gin.Context) {
 	userId, err := strconv.Atoi(c.Param("user-id")) //TODO: need will check token
 	if err != nil {
-		c.JSON(http.StatusBadRequest, resp.Error("Invalid user id"))
+		c.JSON(http.StatusUnauthorized, resp.Error("Invalid user id"))
 		return
 	}
 
@@ -122,7 +122,7 @@ func (h *Handler) AddContact(c *gin.Context) {
 func (h *Handler) DeleteContact(c *gin.Context) {
 	userId, err := strconv.Atoi(c.Param("user-id")) //TODO: need will check token
 	if err != nil {
-		c.JSON(http.StatusBadRequest, resp.Error("Invalid user id"))
+		c.JSON(http.StatusUnauthorized, resp.Error("Invalid user id"))
 		return
 	}
 

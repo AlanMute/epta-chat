@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"errors"
 	"github.com/KrizzMU/coolback-alkol/internal/core"
 	"github.com/jinzhu/gorm"
 )
@@ -17,6 +18,17 @@ func NewContactPostgres(db *gorm.DB) *ContactRepo {
 
 func (r *ContactRepo) Add(ownerId uint64, contactLogin string) error {
 	var user core.User
+
+	if err := r.db.Where("login = ?", contactLogin).First(&user).Error; err != nil {
+		return err
+	}
+
+	var existingContact core.Contact
+	if err := r.db.Where("owner_id = ? AND contact_id = ?", ownerId, user.ID).First(&existingContact).Error; err == nil {
+		return nil
+	} else if !errors.Is(err, gorm.ErrRecordNotFound) {
+		return err
+	}
 
 	if err := r.db.Where("login = ?", contactLogin).First(&user).Error; err != nil {
 		return err
