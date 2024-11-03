@@ -20,7 +20,7 @@ func (r *ChatRepo) Add(name string, isDirect bool, ownerId uint64, members []uin
 	var err error
 	if isDirect {
 		var potentialChats []core.Chat
-		if err := r.db.Where("is_direct = ? AND owner_id IN ?", true, members).Find(&potentialChats).Error; err != nil {
+		if err := r.db.Where("is_direct = ? AND owner_id IN (?)", true, members).Find(&potentialChats).Error; err != nil {
 			return 0, err
 		}
 
