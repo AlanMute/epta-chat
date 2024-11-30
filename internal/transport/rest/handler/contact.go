@@ -22,9 +22,9 @@ import (
 // @Failure 400 {object} resp.ErrorResponse "Запрос не правильно составлен"
 // @Failure 500 {object} resp.ErrorResponse "Возникла внутренняя ошибка"
 func (h *Handler) GetContacts(c *gin.Context) {
-	userId, err := strconv.Atoi(c.Param("user-id")) //TODO: need will check token
+	userId, err := strconv.Atoi(c.Param(userIdParam))
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, resp.Error("Invalid user id"))
+		c.JSON(http.StatusUnauthorized, resp.Error(invalidUserId))
 		return
 	}
 
@@ -82,9 +82,9 @@ func (h *Handler) GetContactById(c *gin.Context) {
 // @Failure 400 {object} resp.ErrorResponse "Запрос не правильно составлен"
 // @Failure 500 {object} resp.ErrorResponse "Возникла внутренняя ошибка"
 func (h *Handler) AddContact(c *gin.Context) {
-	userId, err := strconv.Atoi(c.Param("user-id")) //TODO: need will check token
+	userId, err := strconv.Atoi(c.Param(userIdParam))
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, resp.Error("Invalid user id"))
+		c.JSON(http.StatusUnauthorized, resp.Error(invalidUserId))
 		return
 	}
 
@@ -120,13 +120,13 @@ func (h *Handler) AddContact(c *gin.Context) {
 // @Failure 400 {object} resp.ErrorResponse "Запрос не правильно составлен"
 // @Failure 500 {object} resp.ErrorResponse "Возникла внутренняя ошибка"
 func (h *Handler) DeleteContact(c *gin.Context) {
-	userId, err := strconv.Atoi(c.Param("user-id")) //TODO: need will check token
+	userId, err := strconv.Atoi(c.Param(userIdParam))
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, resp.Error("Invalid user id"))
+		c.JSON(http.StatusUnauthorized, resp.Error(invalidUserId))
 		return
 	}
 
-	contactId, err := strconv.Atoi(c.Param("id"))
+	contactId, err := strconv.Atoi(c.Param(idParam))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, resp.Error("Invalid contact id"))
 		return

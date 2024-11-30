@@ -20,7 +20,7 @@ import (
 // @Failure 400 {object} resp.ErrorResponse "Запрос не правильно составлен"
 // @Failure 500 {object} resp.ErrorResponse "Возникла непредвиденная ошибка"
 func (h *Handler) Connect(c *gin.Context) {
-	chatIDStr := c.Query("chat-id")
+	chatIDStr := c.Query(chatIdParam)
 	if chatIDStr == "" {
 		c.JSON(http.StatusBadRequest, resp.Error("Chat ID is required"))
 		return
@@ -32,7 +32,7 @@ func (h *Handler) Connect(c *gin.Context) {
 		return
 	}
 
-	userIDStr := c.Param("user-id")
+	userIDStr := c.Param(userIdParam)
 	if userIDStr == "" {
 		c.JSON(http.StatusUnauthorized, resp.Error("User ID is required"))
 		return

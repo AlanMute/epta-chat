@@ -37,5 +37,5 @@ func (h *Handler) isLogedIn(c *gin.Context) {
 		return
 	}
 
-	c.AddParam("user-id", id)
+	c.AddParam(userIdParam, id)
 }

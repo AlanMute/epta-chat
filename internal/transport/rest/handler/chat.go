@@ -9,6 +9,14 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+const (
+	idParam       = "id"
+	userIdParam   = "user-id"
+	chatIdParam   = "chat-id"
+	invalidUserId = "Invalid user id"
+	invalidChatId = "Invalid chat id"
+)
+
 // GetChats godoc
 // @Summary Получить список чатов пользователя
 // @Description Получить список чатов пользователя
@@ -21,9 +29,9 @@ import (
 // @Failure 400 {object} resp.ErrorResponse "Запрос не правильно составлен"
 // @Failure 500 {object} resp.ErrorResponse "Возникла внутренняя ошибка"
 func (h *Handler) GetChats(c *gin.Context) {
-	userId, err := strconv.Atoi(c.Param("user-id")) //TODO: need will check token
+	userId, err := strconv.Atoi(c.Param(userIdParam))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, resp.Error("Invalid user id"))
+		c.JSON(http.StatusBadRequest, resp.Error(invalidUserId))
 		return
 	}
 
@@ -49,15 +57,15 @@ func (h *Handler) GetChats(c *gin.Context) {
 // @Failure 400 {object} resp.ErrorResponse "Запрос не правильно составлен"
 // @Failure 500 {object} resp.ErrorResponse "Возникла внутренняя ошибка"
 func (h *Handler) GetChatById(c *gin.Context) {
-	userId, err := strconv.Atoi(c.Param("user-id")) //TODO: need will check token
+	userId, err := strconv.Atoi(c.Param(userIdParam))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, resp.Error("Invalid user id"))
+		c.JSON(http.StatusBadRequest, resp.Error(invalidUserId))
 		return
 	}
 
-	chatId, err := strconv.Atoi(c.Param("id"))
+	chatId, err := strconv.Atoi(c.Param(idParam))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, resp.Error("Invalid chat id"))
+		c.JSON(http.StatusBadRequest, resp.Error(invalidChatId))
 		return
 	}
 
@@ -83,15 +91,15 @@ func (h *Handler) GetChatById(c *gin.Context) {
 // @Failure 400 {object} resp.ErrorResponse "Запрос не правильно составлен"
 // @Failure 500 {object} resp.ErrorResponse "Возникла внутренняя ошибка"
 func (h *Handler) GetChatMembers(c *gin.Context) {
-	userId, err := strconv.Atoi(c.Param("user-id")) //TODO: need will check token
+	userId, err := strconv.Atoi(c.Param(userIdParam))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, resp.Error("Invalid user id"))
+		c.JSON(http.StatusBadRequest, resp.Error(invalidUserId))
 		return
 	}
 
-	chatId, err := strconv.Atoi(c.Param("id"))
+	chatId, err := strconv.Atoi(c.Param(idParam))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, resp.Error("Invalid chat id"))
+		c.JSON(http.StatusBadRequest, resp.Error(invalidChatId))
 		return
 	}
 
@@ -117,9 +125,9 @@ func (h *Handler) GetChatMembers(c *gin.Context) {
 // @Failure 400 {object} resp.ErrorResponse "Запрос не правильно составлен"
 // @Failure 500 {object} resp.ErrorResponse "Возникла внутренняя ошибка"
 func (h *Handler) AddChat(c *gin.Context) {
-	userId, err := strconv.Atoi(c.Param("user-id"))
+	userId, err := strconv.Atoi(c.Param(userIdParam))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, resp.Error("Invalid user id"))
+		c.JSON(http.StatusBadRequest, resp.Error(invalidUserId))
 		return
 	}
 
@@ -153,9 +161,9 @@ func (h *Handler) AddChat(c *gin.Context) {
 // @Failure 400 {object} resp.ErrorResponse "Запрос не правильно составлен"
 // @Failure 500 {object} resp.ErrorResponse "Возникла внутренняя ошибка"
 func (h *Handler) AddMember(c *gin.Context) {
-	userId, err := strconv.Atoi(c.Param("user-id"))
+	userId, err := strconv.Atoi(c.Param(userIdParam))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, resp.Error("Invalid user id"))
+		c.JSON(http.StatusBadRequest, resp.Error(invalidUserId))
 		return
 	}
 
@@ -187,15 +195,15 @@ func (h *Handler) AddMember(c *gin.Context) {
 // @Failure 400 {object} resp.ErrorResponse "Запрос не правильно составлен"
 // @Failure 500 {object} resp.ErrorResponse "Возникла внутренняя ошибка"
 func (h *Handler) DeleteChat(c *gin.Context) {
-	userId, err := strconv.Atoi(c.Param("user-id"))
+	userId, err := strconv.Atoi(c.Param(userIdParam))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, resp.Error("Invalid user id"))
+		c.JSON(http.StatusBadRequest, resp.Error(invalidUserId))
 		return
 	}
 
-	chatId, err := strconv.Atoi(c.Param("id"))
+	chatId, err := strconv.Atoi(c.Param(idParam))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, resp.Error("Invalid chat id"))
+		c.JSON(http.StatusBadRequest, resp.Error(invalidChatId))
 		return
 	}
 
@@ -222,15 +230,15 @@ func (h *Handler) DeleteChat(c *gin.Context) {
 // @Failure 400 {object} resp.ErrorResponse "Запрос не правильно составлен"
 // @Failure 500 {object} resp.ErrorResponse "Возникла внутренняя ошибка"
 func (h *Handler) GetChatMessages(c *gin.Context) {
-	userId, err := strconv.Atoi(c.Param("user-id"))
+	userId, err := strconv.Atoi(c.Param(userIdParam))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, resp.Error("Invalid user id"))
+		c.JSON(http.StatusBadRequest, resp.Error(invalidUserId))
 		return
 	}
 
-	chatId, err := strconv.Atoi(c.Query("chat-id"))
+	chatId, err := strconv.Atoi(c.Query(chatIdParam))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, resp.Error("Invalid chat id"))
+		c.JSON(http.StatusBadRequest, resp.Error(invalidChatId))
 		return
 	}
 

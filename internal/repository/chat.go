@@ -6,6 +6,12 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+const (
+	idEqualParam        = "id = ?"
+	chatAndMembersParam = "chat_id = ? AND member_id = ?"
+	chatIdEqualParam    = "chat_id = ?"
+)
+
 type ChatRepo struct {
 	db *gorm.DB
 }
@@ -17,23 +23,38 @@ func NewChatPostgres(db *gorm.DB) *ChatRepo {
 }
 
 func (r *ChatRepo) Add(name string, isDirect bool, ownerId uint64, members []uint64) (uint64, error) {
-	var err error
 	if isDirect {
-		var potentialChats []core.Chat
-		if err := r.db.Where("is_direct = ? AND owner_id IN (?)", true, members).Find(&potentialChats).Error; err != nil {
+		existingChatID, err := r.findDirectChat(members)
+		if err != nil {
 			return 0, err
 		}
-
-		for _, chat := range potentialChats {
-			var chatMemberIds []uint64
-			r.db.Model(&core.ChatMembers{}).Where("chat_id = ?", chat.ID).Pluck("member_id", &chatMemberIds)
-
-			if equalMembers(chatMemberIds, members) {
-				return chat.ID, nil
-			}
+		if existingChatID != 0 {
+			return existingChatID, nil
 		}
 	}
 
+	return r.createNewChat(name, isDirect, ownerId, members)
+}
+
+func (r *ChatRepo) findDirectChat(members []uint64) (uint64, error) {
+	var potentialChats []core.Chat
+	if err := r.db.Where("is_direct = ? AND owner_id IN (?)", true, members).Find(&potentialChats).Error; err != nil {
+		return 0, err
+	}
+
+	for _, chat := range potentialChats {
+		var chatMemberIds []uint64
+		r.db.Model(&core.ChatMembers{}).Where(chatIdEqualParam, chat.ID).Pluck("member_id", &chatMemberIds)
+
+		if equalMembers(chatMemberIds, members) {
+			return chat.ID, nil
+		}
+	}
+
+	return 0, nil
+}
+
+func (r *ChatRepo) createNewChat(name string, isDirect bool, ownerId uint64, members []uint64) (uint64, error) {
 	tx := r.db.Begin()
 	defer func() {
 		if r := recover(); r != nil {
@@ -47,35 +68,47 @@ func (r *ChatRepo) Add(name string, isDirect bool, ownerId uint64, members []uin
 		OwnerId:  ownerId,
 	}
 
-	if err = tx.Create(&newChat).Error; err != nil {
+	if err := tx.Create(&newChat).Error; err != nil {
 		tx.Rollback()
 		return 0, err
 	}
 
+	if err := r.addMembersToChat(tx, newChat.ID, members); err != nil {
+		tx.Rollback()
+		return 0, err
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		return 0, err
+	}
+
+	return newChat.ID, nil
+}
+
+func (r *ChatRepo) addMembersToChat(tx *gorm.DB, chatID uint64, members []uint64) error {
 	for _, memberId := range members {
 		var existingMember core.ChatMembers
-		if err = tx.Where("chat_id = ? AND member_id = ?", newChat.ID, memberId).First(&existingMember).Error; err == nil {
+		if err := tx.Where(chatAndMembersParam, chatID, memberId).First(&existingMember).Error; err == nil {
 			continue
 		}
 
 		newMember := core.ChatMembers{
 			MemberId: memberId,
-			ChatId:   newChat.ID,
+			ChatId:   chatID,
 		}
 
-		if err = tx.Create(&newMember).Error; err != nil {
-			tx.Rollback()
-			return 0, err
+		if err := tx.Create(&newMember).Error; err != nil {
+			return err
 		}
 	}
 
-	return newChat.ID, tx.Commit().Error
+	return nil
 }
 
 func (r *ChatRepo) AddMember(ownerId, chatId uint64, members []uint64) error {
 	var chat core.Chat
 
-	if result := r.db.Where("id = ?", chatId).First(&chat); result.Error != nil {
+	if result := r.db.Where(idEqualParam, chatId).First(&chat); result.Error != nil {
 		return result.Error
 	}
 
@@ -96,7 +129,7 @@ func (r *ChatRepo) AddMember(ownerId, chatId uint64, members []uint64) error {
 
 	for _, memberId := range members {
 		var existingMember core.ChatMembers
-		if err := tx.Where("chat_id = ? AND member_id = ?", chatId, memberId).First(&existingMember).Error; err == nil {
+		if err := tx.Where(chatAndMembersParam, chatId, memberId).First(&existingMember).Error; err == nil {
 			continue
 		}
 
@@ -121,14 +154,14 @@ func (r *ChatRepo) AddMember(ownerId, chatId uint64, members []uint64) error {
 func (r *ChatRepo) Delete(userId, chatId uint64) error {
 	var chat core.Chat
 
-	if result := r.db.Where("id = ?", chatId).First(&chat); result.Error != nil {
+	if result := r.db.Where(idEqualParam, chatId).First(&chat); result.Error != nil {
 		return result.Error
 	}
 
 	if chat.IsDirect {
 		var member core.ChatMembers
 
-		if result := r.db.Where("chat_id = ? AND member_id = ?", chatId, userId).First(&member); result.Error != nil {
+		if result := r.db.Where(chatAndMembersParam, chatId, userId).First(&member); result.Error != nil {
 			if gorm.IsRecordNotFoundError(result.Error) {
 				return fmt.Errorf("not a member of the direct chat")
 			}
@@ -148,7 +181,7 @@ func (r *ChatRepo) Delete(userId, chatId uint64) error {
 func (r *ChatRepo) GetById(userId, chatId uint64) (core.Chat, error) {
 	var chat core.Chat
 
-	if result := r.db.Where("id = ?", chatId).First(&chat); result.Error != nil {
+	if result := r.db.Where(idEqualParam, chatId).First(&chat); result.Error != nil {
 		return core.Chat{}, result.Error
 	}
 
@@ -185,7 +218,7 @@ func (r *ChatRepo) GetAll(userId uint64) ([]core.Chat, error) {
 
 func (r *ChatRepo) GetMembers(userId, chatId uint64) ([]core.UserInfo, error) {
 	var member core.ChatMembers
-	if result := r.db.Where("chat_id = ? AND member_id = ?", chatId, userId).First(&member); result.Error != nil {
+	if result := r.db.Where(chatAndMembersParam, chatId, userId).First(&member); result.Error != nil {
 		if gorm.IsRecordNotFoundError(result.Error) {
 			return nil, fmt.Errorf("user is not a member of the chat")
 		}
@@ -193,7 +226,7 @@ func (r *ChatRepo) GetMembers(userId, chatId uint64) ([]core.UserInfo, error) {
 	}
 
 	var chatMembers []core.ChatMembers
-	if result := r.db.Where("chat_id = ?", chatId).Find(&chatMembers); result.Error != nil {
+	if result := r.db.Where(chatIdEqualParam, chatId).Find(&chatMembers); result.Error != nil {
 		return nil, result.Error
 	}
 
@@ -231,7 +264,7 @@ func (r *ChatRepo) setChatName(chat core.Chat, userId uint64) (core.Chat, error)
 		}
 
 		var user core.User
-		if result := r.db.Where("id = ?", otherMember.MemberId).First(&user); result.Error != nil {
+		if result := r.db.Where(idEqualParam, otherMember.MemberId).First(&user); result.Error != nil {
 			return core.Chat{}, result.Error
 		}
 
@@ -239,7 +272,7 @@ func (r *ChatRepo) setChatName(chat core.Chat, userId uint64) (core.Chat, error)
 	} else {
 		var member core.ChatMembers
 
-		if result := r.db.Where("chat_id = ? AND member_id = ?", chat.ID, userId).First(&member); result.Error != nil {
+		if result := r.db.Where(chatAndMembersParam, chat.ID, userId).First(&member); result.Error != nil {
 			if gorm.IsRecordNotFoundError(result.Error) {
 				return core.Chat{}, fmt.Errorf("not a member of the chat")
 			}
@@ -252,7 +285,7 @@ func (r *ChatRepo) setChatName(chat core.Chat, userId uint64) (core.Chat, error)
 
 func (r *ChatRepo) EnsureCommonChatExists() error {
 	var commonChat core.Chat
-	result := r.db.First(&commonChat, "id = ?", 1)
+	result := r.db.First(&commonChat, idEqualParam, 1)
 
 	if result.Error == gorm.ErrRecordNotFound {
 		commonChat = core.Chat{

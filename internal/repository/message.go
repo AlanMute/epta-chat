@@ -43,13 +43,13 @@ func (r *MessageRepo) GetBatch(userId, chatId, pageNumber uint64) ([]core.Messag
 
 	var member core.ChatMembers
 
-	if err := r.db.Where("member_id = ? AND chat_id = ?", userId, chatId).First(&member).Error; err != nil {
+	if err := r.db.Where(chatAndMembersParam, chatId, userId).First(&member).Error; err != nil {
 		return nil, err
 	}
 
 	var messages []core.Message
 
-	if err := r.db.Preload("Sender").Where("chat_id = ?", chatId).
+	if err := r.db.Preload("Sender").Where(chatIdEqualParam, chatId).
 		Order("id DESC").
 		Limit(batchSize).
 		Offset(batchSize * pageNumber).

@@ -96,14 +96,14 @@ func (h *Handler) SignIn(c *gin.Context) {
 // @Failure 500 {object} resp.ErrorResponse "Возникла внутренняя ошибка"
 func (h *Handler) SetUsername(c *gin.Context) {
 	var (
-		info   UserName
-		userId int
-		err    error
+		info UserName
+		usId int
+		err  error
 	)
 
-	userId, err = strconv.Atoi(c.Param("user-id"))
+	usId, err = strconv.Atoi(c.Param(userIdParam))
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, resp.Error("Invalid user id"))
+		c.JSON(http.StatusUnauthorized, resp.Error(invalidUserId))
 		return
 	}
 
@@ -112,7 +112,7 @@ func (h *Handler) SetUsername(c *gin.Context) {
 		return
 	}
 
-	err = h.services.User.SetUserName(uint64(userId), info.Username)
+	err = h.services.User.SetUserName(uint64(usId), info.Username)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, resp.Error(err.Error()))
 		return
